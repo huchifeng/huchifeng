@@ -204,6 +204,10 @@
 			>
 		</File>
 		<File
+			RelativePath=".\README.txt"
+			>
+		</File>
+		<File
 			RelativePath=".\test.cmd"
 			>
 		</File>

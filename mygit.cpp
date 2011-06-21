@@ -19,7 +19,8 @@
 struct t_entry{
 	// id type hash bytes
 	// id type ref_id name date
-	// id type ref_id[] name date // 目录,标签 是等价的
+	// id type prefix (ref_id name)[] date // 目录,所有文件名必须有共同前缀 add-f 从文件读取列表
+	// 目录对象本身也应存其 hash，以便排除重复
 	qint64 id; // no need to be unsigned
 	enum type{
 		content=1,
@@ -388,6 +389,7 @@ int main(int argc, char *argv[]){
 	}
 	else if(argc==4 && strcmp(argv[1], "del")==0){
 		//return mygit_del(argv[2], argv[3]); // id 置为负
+		//只附加新记录，不修改旧文件，完全作为日志处理
 	}
 	else if(argc==4 && strcmp(argv[1], "undel")==0){
 		//return mygit_undel(argv[2], argv[3]);
