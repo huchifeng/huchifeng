@@ -40,119 +40,87 @@ HOMEPAGE: https://github.com/huchifeng/mygit
 #endif
 
 struct t_entry{
-	// id type hash bytes
-	// id type ref_id name date
-	// id type prefix (ref_id name)[] date // 目录,所有文件名必须有共同前缀 add-f 从文件读取列表
-	// 目录对象本身也应存其 hash，以便排除重复
-	qint64 id; // no need to be unsigned
-	enum type{
-		content=1,
-		ref=2
-	};
-	unsigned char t;
-	
+	qint64 id;
 	QByteArray hash;
+	QByteArray type;
 	qint64 bytes_size;
 	qint64 bytes_offset;
 
-	qint64 ref_id;
-	QByteArray name; // UTF8
-	qint64 date; // MSecsSinceEpoch  // 浮点可以精确到 1ms 以下，但没有意义， 浮点本身不精确
-
 	t_entry(){
 		id = 0;
-		t = 0;
-		ref_id = 0;
-		date = 0;
+		bytes_size = 0;
+		bytes_offset = 0;
 	}
 };
 struct t_db{
-	QFile d;
+	QFile file;
 	QMap<qint64, t_entry> map_id_to_entry;
 	QMap<QByteArray, QVector<qint64> > map_hash_to_id;
-	QMap<QByteArray, QVector<qint64> > map_name_to_id; // then get the ref
-	QMap<qint64, QVector<qint64> > map_ref_to_id;
 	qint64 max_id;
 	t_db(){
 		max_id = 0;
 	}
 };
-double seconds_since_1970UTC()
-{
-	// python code: return time.time(); # it's float
-	QDateTime t = QDateTime::currentDateTime();
-	return t.toTime_t() + t.time().msec()/1000.0;
-}
 int mygit_get_entry(t_db& db, t_entry& e){
-	int n = db.d.read((char*)&e.id, sizeof(e.id));
-	//std::cerr << "got:" << n << std::endl;
-	if(n == 0)
-		return 1;
-	//qDebug() << s.errorString(); // unknown error
-	if(n != sizeof(e.id))
-		return 2;
-	if(e.id <= 0)
-		return 2;
-	n = db.d.read((char*)&e.t, sizeof(e.t));
-	if(n != sizeof(e.t) || e.t>t_entry::ref)
-		return 3;
-	if(e.t == t_entry::content){
-		int len=0;
-		if(db.d.read((char*)&len, sizeof(len))!=sizeof(len)
-			|| len<=0 )
-		{
-			return 4;
+	{
+		int n = db.file.read((char*)&e.id, sizeof(e.id));
+		if(n == 0){
+			qDebug() << "open db fail";
+			return 1;
+		}
+		if(n != sizeof(e.id) || e.id==0){
+			//  || e.id <= 0
+			qDebug() << "wrong db";
+			return 2;
+		}
+	}
+	{
+		unsigned char len = 0;
+		int n = db.file.read((char*)&len, sizeof(len));
+		if(n != sizeof(len) || len<=0){
+			qDebug() << "wrong db";
+			return 2;
+		}
+		e.type.resize(len);
+		if(db.file.read(e.type.data(), len)!=len){
+			qDebug() << "wrong db";
+			return 2;
+		}
+	}
+	{
+		unsigned char len=0;
+		int n = db.file.read((char*)&len, sizeof(len));
+		if(n != sizeof(len) || len<=0 ){
+			qDebug() << "wrong db";
+			return 2;
 		}
 		e.hash.resize(len);
-		if(db.d.read(e.hash.data(), len)!=len){
-			return 5;
+		if(db.file.read(e.hash.data(), len)!=len){
+			qDebug() << "wrong db";
+			return 2;
 		}
+	}
+	{
 		//qDebug() << e.hash.toHex();
-		if(db.d.read((char*)&e.bytes_size, sizeof(e.bytes_size))!=sizeof(e.bytes_size)
-			|| e.bytes_size<=0 )
-		{
-			return 6;
+		int n = db.file.read((char*)&e.bytes_size, sizeof(e.bytes_size));
+		if(n != sizeof(e.bytes_size) || e.bytes_size<=0 ){
+			qDebug() << "wrong db";
+			return 2;
 		}
-		e.bytes_offset = db.d.pos(); // after the size field
-		if(!db.d.seek(e.bytes_offset + e.bytes_size)){
-			return 7;
+		e.bytes_offset = db.file.pos(); // after the size field
+		if(! db.file.seek(e.bytes_offset + e.bytes_size)){
+			qDebug() << "wrong db";
+			return 2;
 		}
 		db.map_id_to_entry[e.id] = e;
 		db.map_hash_to_id[e.hash].push_back(e.id);
 		db.max_id = qMax(db.max_id, e.id);
 		return 0;
 	}
-	if(e.t == t_entry::ref){
-		if(db.d.read((char*)&e.ref_id, sizeof(e.ref_id))!=sizeof(e.ref_id)
-			|| e.ref_id<=0 )
-		{
-			return 4;
-		}
-		int len=0;
-		if(db.d.read((char*)&len, sizeof(len))!=sizeof(len)
-			|| len<=0 )
-		{
-			return 4;
-		}
-		e.name.resize(len);
-		if(db.d.read(e.name.data(), len)!=len){
-			return 5;
-		}
-		if(db.d.read((char*)&e.date, sizeof(e.date))!=sizeof(e.date))
-		{
-			return 4;
-		}
-		db.map_id_to_entry[e.id] = e;
-		db.map_name_to_id[e.name].push_back(e.id);
-		db.map_ref_to_id[e.ref_id].push_back(e.id);
-		db.max_id = qMax(db.max_id, e.id);
-		return 0;
-	}
-	return 9;
 }
 int get_hash(QFile& s, QByteArray& hash_result){
 	qint64 old_pos = s.pos();
-	QCryptographicHash hash(QCryptographicHash::Md5);
+	QCryptographicHash hash(QCryptographicHash::Sha1);
 	qint64 s_size = s.size();
 	qint64 check_size = 0;
 	char buf[100];
@@ -227,104 +195,151 @@ int file_cmp(QFile& d, QFile& s, qint64 size, int& cmp_res){
 	}
 	return 0;
 }
-int mygit_add_name(t_db& db, QByteArray filename, qint64 ref_id){
-	QVector<qint64> id = db.map_ref_to_id[ref_id];
-	for(int i=0; i<id.size(); i++){
-		t_entry e = db.map_id_to_entry[id[i]];
-		if(e.t != t_entry::ref
-			|| e.ref_id != ref_id)
-			return 20;
-		if(e.name == filename){
-			qDebug() << "ignore name " << e.id << QString::fromUtf8(e.name);
-			return 0;
-		}
-	}
-	t_entry e2;
-	qint64 old_pos = db.d.size();
-	db.d.seek(old_pos);
-	db.max_id ++;
-	e2.id = db.max_id;
-	e2.t = t_entry::ref;
-	e2.ref_id = ref_id;
-	db.d.write((char*)&e2.id, sizeof(e2.id));
-	db.d.write((char*)&e2.t, sizeof(e2.t));
-	db.d.write((char*)&e2.ref_id, sizeof(e2.ref_id));
-	{
-		int len = filename.size();
-		db.d.write((char*)&len, sizeof(len));
-		db.d.write(filename.constData(), filename.size());
-	}
-	e2.date = QDateTime::currentDateTime().toMSecsSinceEpoch();
-	db.d.write((char*)&e2.date, sizeof(e2.date));
-	return 0;
-}
-int mygit_add(QString db_filename, QString file){
+
+int mygit_add_file(QString db_filename, QByteArray type, QString file){
+	if(type.size()>255)
+		return 100;
 	t_db db;
-	db.d.setFileName(db_filename);
-	if(!db.d.open(QIODevice::ReadWrite)){
+	db.file.setFileName(db_filename);
+	if(!db.file.open(QIODevice::ReadWrite)){
 		// will create file if not exists
 		return 1;
 	}
-	while(db.d.pos() != db.d.size()){
+	while(db.file.pos() != db.file.size()){
 		t_entry e;
 		if(mygit_get_entry(db, e)!=0)
 			return 2;
 	}
 
-	QFile s(file);
-	if(!s.open(QIODevice::ReadOnly)){
+	QFile input(file);
+	if(!input.open(QIODevice::ReadOnly)){
 		return 10;
 	}
-	t_entry e2;
+	t_entry e1;
 	db.max_id ++;
-	e2.id = db.max_id;
-	e2.t = t_entry::content;
-	if(get_hash(s, e2.hash)!=0){
+	e1.id = db.max_id;
+	e1.type = type;
+	if(get_hash(input, e1.hash)!=0){
 		return 3;
 	}
-	std::cerr << e2.hash.toHex().constData() << std::endl;
-	QVector<qint64> same_hash = db.map_hash_to_id[e2.hash];
-	if(same_hash.size()>0)
-	{
+	std::cerr << e1.hash.toHex().constData() << std::endl;
+	QVector<qint64> same_hash = db.map_hash_to_id[e1.hash];
+	if(same_hash.size()>0){
 		for(int i=0; i<same_hash.size(); i++){
 			qint64 id = same_hash[i];
 			t_entry e2 = db.map_id_to_entry[id];
 			qDebug() << "same hash, checking" << e2.id;
-			if(e2.bytes_size != s.size()){
+			if(e2.bytes_size != input.size()){
 				qDebug() << "same hash, different size";
 				continue;
 			}
-			db.d.seek(e2.bytes_offset);
-			s.seek(0);
+			db.file.seek(e2.bytes_offset);
+			input.seek(0);
 			int cmp_res = 0;
-			if(file_cmp(db.d, s, e2.bytes_size, cmp_res)!=0){
+			if(file_cmp(db.file, input, e2.bytes_size, cmp_res)!=0){
 				return 11;
 			}
 			if(cmp_res == 0){
 				qDebug() << "same hash, same content";
-				return mygit_add_name(db, file.toUtf8(), e2.id);
+				std::cout << e2.id;
+				return 0;
 			}
 		}
 	}
 
-	qint64 old_pos = db.d.size();
-	db.d.seek(old_pos);
-	db.d.write((char*)&e2.id, sizeof(e2.id));
-	db.d.write((char*)&e2.t, sizeof(e2.t));
+	qint64 old_pos = db.file.size();
+	db.file.seek(old_pos);
+	db.file.write((char*)&e1.id, sizeof(e1.id));
 	{
-		int len = e2.hash.size();
-		db.d.write((char*)&len, sizeof(len));
-		db.d.write(e2.hash.constData(), e2.hash.size());
+		unsigned char len = e1.type.size();
+		db.file.write((char*)&len, sizeof(len));
+		db.file.write(e1.type.constData(), e1.type.size());
 	}
-	qint64 s_size = s.size();
-	db.d.write((char*)&s_size, sizeof(s_size));
-	if(file_append(db.d, s) != 0){
-		db.d.resize(old_pos);
+	{
+		unsigned char len = e1.hash.size();
+		db.file.write((char*)&len, sizeof(len));
+		db.file.write(e1.hash.constData(), e1.hash.size());
+	}
+	qint64 input_size = input.size();
+	db.file.write((char*)&input_size, sizeof(input_size));
+	if(file_append(db.file, input) != 0){
+		db.file.resize(old_pos);
 		return 4;
 	}
-	return mygit_add_name(db, file.toUtf8(), e2.id);
+	std::cout << e1.id;
+	return 0;
 }
 
+int mygit_add(QString db_filename, QByteArray type, QByteArray content){
+	if(type.size()>255)
+		return 100;
+	t_db db;
+	db.file.setFileName(db_filename);
+	if(!db.file.open(QIODevice::ReadWrite)){
+		// will create file if not exists
+		return 1;
+	}
+	while(db.file.pos() != db.file.size()){
+		t_entry e;
+		if(mygit_get_entry(db, e)!=0)
+			return 2;
+	}
+
+	t_entry e1;
+	db.max_id ++;
+	e1.id = db.max_id;
+	e1.type = type;
+	{
+		QCryptographicHash hash(QCryptographicHash::Sha1);
+		hash.addData(content.constData(), content.size());
+		e1.hash = hash.result();
+	}
+	std::cerr << e1.hash.toHex().constData() << std::endl;
+	QVector<qint64> same_hash = db.map_hash_to_id[e1.hash];
+	if(same_hash.size()>0){
+		for(int i=0; i<same_hash.size(); i++){
+			qint64 id = same_hash[i];
+			t_entry e2 = db.map_id_to_entry[id];
+			qDebug() << "same hash, checking" << e2.id;
+			if(e2.bytes_size != content.size()){
+				qDebug() << "same hash, different size";
+				continue;
+			}
+			db.file.seek(e2.bytes_offset);
+			QByteArray tmp;
+			tmp.resize(e2.bytes_size);
+			db.file.read(tmp.data(), tmp.size());
+			int cmp_res = 0;
+			if(memcmp(tmp.constData(), content.constData(), tmp.size())==0){
+				qDebug() << "same hash, same content";
+				std::cout << e2.id;
+				return 0;
+			}
+		}
+	}
+
+	qint64 old_pos = db.file.size();
+	db.file.seek(old_pos);
+	db.file.write((char*)&e1.id, sizeof(e1.id));
+	{
+		unsigned char len = e1.type.size();
+		db.file.write((char*)&len, sizeof(len));
+		db.file.write(e1.type.constData(), e1.type.size());
+	}
+	{
+		unsigned char len = e1.hash.size();
+		db.file.write((char*)&len, sizeof(len));
+		db.file.write(e1.hash.constData(), e1.hash.size());
+	}
+	qint64 input_size = content.size();
+	db.file.write((char*)&input_size, sizeof(input_size));
+	if(db.file.write(content.constData(), content.size()) != input_size){
+		db.file.resize(old_pos);
+		return 4;
+	}
+	std::cout << e1.id;
+	return 0;
+}
 std::ostream& operator<<(std::ostream& o, QByteArray b)
 {
 	o << b.constData();
@@ -335,42 +350,83 @@ std::ostream& operator<<(std::ostream& o, QString b)
 	o << b.toLocal8Bit();
 	return o;
 }
-
 int mygit_dir(QString db_filename){
 	t_db db;
-	db.d.setFileName(db_filename);
-	if(!db.d.open(QIODevice::ReadWrite)){
+	db.file.setFileName(db_filename);
+	if(!db.file.open(QIODevice::ReadWrite)){
 		// will create file if not exists
 		return 1;
 	}
-	while(db.d.pos() != db.d.size()){
+	while(db.file.pos() != db.file.size()){
 		t_entry e;
 		if(mygit_get_entry(db, e)!=0)
 			return 2;
-		if(e.t == t_entry::content){
-			std::cout << "dat " << e.id << " " << e.hash.toHex()  << " " << e.bytes_size<< std::endl;
-		}
-		else if(e.t == t_entry::ref){
-			std::cout << "ref " << e.id << " " << e.ref_id 
-				<< " " << QDateTime::fromMSecsSinceEpoch(e.date).toString("yyyy-MM-dd,hh-mm-ss.zzz")
-				<< " " << QString::fromUtf8(e.name) << std::endl;
-		}		
+		std::cout << e.id << " " << e.hash.toHex()  << " " << e.type << " " << e.bytes_size<< std::endl;
 	}
 	return 0;
 }
-
-int mygit_copy(QString db_filename, QString s_id, QString file){
+int mygit_get_type(QString db_filename, QByteArray type){
+	t_db db;
+	db.file.setFileName(db_filename);
+	if(!db.file.open(QIODevice::ReadWrite)){
+		// will create file if not exists
+		return 1;
+	}
+	while(db.file.pos() != db.file.size()){
+		t_entry e;
+		if(mygit_get_entry(db, e)!=0)
+			return 2;
+		if(e.type == type){
+			db.file.seek(e.bytes_offset);
+			QByteArray tmp;
+			tmp.resize(e.bytes_size);
+			db.file.read(tmp.data(), tmp.size());
+			std::cout << tmp.constData();
+			std::cout << std::endl; // for multiple records
+			db.file.seek(e.bytes_offset + e.bytes_size);
+		}
+	}
+	return 0;
+}
+int mygit_get(QString db_filename, QByteArray s_id){
 	bool ok;
 	qint64 id = s_id.toLongLong(&ok);
 	if(!ok)
 		return 1;
 	t_db db;
-	db.d.setFileName(db_filename);
-	if(!db.d.open(QIODevice::ReadWrite)){
+	db.file.setFileName(db_filename);
+	if(!db.file.open(QIODevice::ReadWrite)){
 		// will create file if not exists
 		return 1;
 	}
-	while(db.d.pos() != db.d.size()){
+	while(db.file.pos() != db.file.size()){
+		t_entry e;
+		if(mygit_get_entry(db, e)!=0)
+			return 2;
+		if(e.id == id){
+			db.file.seek(e.bytes_offset);
+			QByteArray tmp;
+			tmp.resize(e.bytes_size);
+			db.file.read(tmp.data(), tmp.size());
+			std::cout << tmp.constData();
+			return 0;
+		}
+	}
+	return 10;
+}
+
+int mygit_get_file(QString db_filename, QString s_id, QString file){
+	bool ok;
+	qint64 id = s_id.toLongLong(&ok);
+	if(!ok)
+		return 1;
+	t_db db;
+	db.file.setFileName(db_filename);
+	if(!db.file.open(QIODevice::ReadWrite)){
+		// will create file if not exists
+		return 1;
+	}
+	while(db.file.pos() != db.file.size()){
 		t_entry e;
 		if(mygit_get_entry(db, e)!=0)
 			return 2;
@@ -379,58 +435,125 @@ int mygit_copy(QString db_filename, QString s_id, QString file){
 		return 2;
 	}
 	t_entry e = db.map_id_to_entry[id];
-	if(e.t != t_entry::content){
-		return 3;
-	}
 
 	QFile s(file);
 	if(!s.open(QIODevice::WriteOnly)){
 		return 10;
 	}
 
-	db.d.seek(e.bytes_offset);
-	return file_from(db.d, e.bytes_size, s);
+	db.file.seek(e.bytes_offset);
+	return file_from(db.file, e.bytes_size, s);
 
+}
+
+int mygit_del(QString db_filename, QByteArray s_id){
+	bool ok;
+	qint64 id = s_id.toLongLong(&ok);
+	if(!ok)
+		return 1;
+	t_db db;
+	db.file.setFileName(db_filename);
+	if(!db.file.open(QIODevice::ReadWrite)){
+		// will create file if not exists
+		return 1;
+	}
+	while(db.file.pos() != db.file.size()){
+		t_entry e;
+		qint64 pos = db.file.pos();
+		if(mygit_get_entry(db, e)!=0)
+			return 2;
+		if(e.id == id){
+			db.file.seek(pos);
+			id = -id;
+			db.file.write((char*)&id, sizeof(id));
+			return 0;
+		}
+	}
+	qDebug() << id << "not found";
+	return 100;
+}
+
+int mygit_pack(QString db_filename){
+	t_db db;
+	db.file.setFileName(db_filename);
+	if(!db.file.open(QIODevice::ReadWrite)){
+		// will create file if not exists
+		return 1;
+	}
+	qint64 write_pos = 0;
+	while(db.file.pos() != db.file.size()){
+		t_entry e;
+		qint64 pos = db.file.pos();
+		if(mygit_get_entry(db, e)!=0)
+			return 2;
+		qint64 pos2 = e.bytes_offset + e.bytes_size;
+		if(e.id < 0){
+			continue;
+		}
+		if(write_pos < pos){
+			char buf[100];
+			for(qint64 n = pos2 - pos; n>0;){
+				qint64 to_write = qMin(n, (qint64)sizeof(buf));
+				db.file.seek(pos + (pos2-pos - n));
+				int done = db.file.read(buf, to_write);
+				if(done != to_write){
+					qDebug() << "pack fail";
+					return 30;
+				}
+				db.file.seek(write_pos + (pos2-pos - n));
+				db.file.write(buf, to_write);
+				n -= to_write;
+			}
+		}
+		write_pos += pos2 - pos;
+		db.file.seek(pos2);
+	}
+	db.file.resize(write_pos);
+	return 0;
 }
 
 int main(int argc, char *argv[]){
     QApplication app(argc, argv); // cannot wchar
 
-	if(argc==4 && strcmp(argv[1], "add")==0){
-		return mygit_add(argv[2], QString::fromLocal8Bit(argv[3]));
+	if(argc==5 && strcmp(argv[1], "add")==0){
+		return mygit_add(argv[2], argv[3], argv[4]);
 	}
-	else if(argc==3 && strcmp(argv[1], "dir")==0){
-		// 可以选择前缀，只显示符合条件的部分
+	if(argc==5 && strcmp(argv[1], "add-file")==0){
+		return mygit_add_file(argv[2], argv[3], QString::fromLocal8Bit(argv[4]));
+	}
+	if(argc==3 && strcmp(argv[1], "dir")==0){
 		return mygit_dir(argv[2]);
 	}
-	else if(argc==5 && strcmp(argv[1], "copy")==0){  //使用 data id
-		return mygit_copy(argv[2], argv[3], argv[4]);
-		// 不能使用 ref id，都是全路径，不安全。
+	if(argc==4 && strcmp(argv[1], "get")==0){
+		return mygit_get(argv[2], argv[3]);
 	}
-	else if(argc==5 && strcmp(argv[1], "ref")==0){
-		//return mygit_ref(argv[2], argv[3], argv[3]); // 创建新符号名
+	if(argc==4 && strcmp(argv[1], "get-type")==0){
+		return mygit_get_type(argv[2], argv[3]);
 	}
-	else if(argc==4 && strcmp(argv[1], "del")==0){
-		//return mygit_del(argv[2], argv[3]); // id 置为负
-		//只附加新记录，不修改旧文件，完全作为日志处理
+	if(argc==5 && strcmp(argv[1], "get-file")==0){
+		return mygit_get_file(argv[2], argv[3], argv[4]);
 	}
-	else if(argc==4 && strcmp(argv[1], "undel")==0){
-		//return mygit_undel(argv[2], argv[3]);
+	if(argc==4 && strcmp(argv[1], "del")==0){
+		return mygit_del(argv[2], argv[3]);
+		// set the id to negative
 	}
-	else if(argc==3 && strcmp(argv[1], "pack")==0){
-		//return mygit_pack(argv[2]); // 回收删除的空间
+	if(argc==4 && strcmp(argv[1], "undel")==0){
+		return mygit_del(argv[2], "-" + QByteArray(argv[3]));
 	}
-	else if(argc==2 && strcmp(argv[1], "term")==0){
-		// terminal style interaction
-	}
-	else if(argc==2 && strcmp(argv[1], "web")==0){
-		// run as a web server, 
+	if(argc==3 && strcmp(argv[1], "pack")==0){
+		return mygit_pack(argv[2]); // 回收删除的空间
 	}
 
 	std::cout << "usage:\n"
-		<< "mygit add <db-filename> <input-filename>\n"
+		<< "mygit add <db-filename> <type> <input-content>\n"
+		<< "mygit add-file <db-filename> <type> <input-filename>\n"
 		<< "mygit dir <db-filename>\n"
-		<< "mygit copy <db-filename> <int64-id> <output-filename>\n"
+		<< "mygit get <db-filename> <type>\n"
+		<< "mygit get-type <db-filename> <type>\n"
+		<< "mygit get-file <db-filename> <int64-id> <output-filename>\n"
+		<< "mygit del <db-filename> <int64-id>\n"
+		<< "mygit undel <db-filename> <int64-id>\n"
+		<< "mygit pack <db-filename>\n"
 		;
 
 	return 0; //app.exec();

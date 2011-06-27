@@ -25,3 +25,6 @@
 /test-mygit-pic.cmd
 /test.cmd
 /ÖĞÎÄ ²âÊÔ.txt
+*.db
+/mygit.cpp.bak
+/test.jpg
