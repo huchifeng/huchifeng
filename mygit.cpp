@@ -363,7 +363,9 @@ int mygit_dir(QString db_filename){
 		t_entry e;
 		if(mygit_get_entry(db, e)!=0)
 			return 2;
-		std::cout << e.id << " " << e.hash.toHex()  << " " << e.type << " " << e.bytes_size<< std::endl;
+		std::cout << e.id << " " << e.type 
+			<< " " << e.hash.toHex()
+			<<  " " << e.bytes_size << std::endl;
 	}
 	return 0;
 }
@@ -527,56 +529,74 @@ int mygit_hash(QByteArray filename){
 	std::cout << hash.toHex().constData() << std::endl;
 	return 0;
 }
+int mygit_hash_value(QByteArray value){
+	QCryptographicHash hash(QCryptographicHash::Sha1);
+	hash.addData(value.constData(), value.size());
+	std::cout <<  hash.result().toHex().constData() << std::endl;
+	return 0;
+}
 int main(int argc, char *argv[]){
     QApplication app(argc, argv); // cannot wchar
 
-	const char* PREFIX_FILE = "file:";
-	if(argc==5 && strcmp(argv[1], "add")==0){
-		return mygit_add(argv[2], argv[3], argv[4]);
+	// not allow free order of parameters
+	if(argc==8 && strcmp(argv[1], "add")==0 && strcmp(argv[2], "--db")==0
+		&& strcmp(argv[4], "--type")==0 && strcmp(argv[6], "--value")==0){
+		return mygit_add(argv[3], argv[5], argv[7]);
 	}
-	if(argc==5 && strcmp(argv[1], "add-file")==0){
-		return mygit_add_file(argv[2], argv[3], QString::fromLocal8Bit(argv[4]));
+	if(argc==8 && strcmp(argv[1], "add")==0 && strcmp(argv[2], "--db")==0
+		&& strcmp(argv[4], "--type")==0 && strcmp(argv[6], "--file")==0){
+		return mygit_add_file(argv[3], argv[5], QString::fromLocal8Bit(argv[7]));
 	}
-	if(argc==3 && strcmp(argv[1], "dir")==0){
-		return mygit_dir(argv[2]);
+	if(argc==4 && strcmp(argv[1], "dir")==0 && strcmp(argv[2], "--db")==0){
+		return mygit_dir(argv[3]);
 	}
-	if(argc==4 && strcmp(argv[1], "get")==0){
-		return mygit_get(argv[2], argv[3]);
+	if(argc==6 && strcmp(argv[1], "get")==0 && strcmp(argv[2], "--db")==0
+		&& strcmp(argv[4], "--id")==0){
+		return mygit_get(argv[3], argv[5]);
 	}
-	if(argc==4 && strcmp(argv[1], "get-type")==0){
-		return mygit_get_type(argv[2], argv[3]);
+	if(argc==6 && strcmp(argv[1], "get")==0 && strcmp(argv[2], "--db")==0
+		&& strcmp(argv[4], "--type")==0){
+		return mygit_get_type(argv[3], argv[5]);
 	}
-	if(argc==5 && strcmp(argv[1], "get-file")==0){
-		return mygit_get_file(argv[2], argv[3], argv[4]);
+	if(argc==8 && strcmp(argv[1], "get")==0 && strcmp(argv[2], "--db")==0
+		&& strcmp(argv[4], "--id")==0
+		&& strcmp(argv[6], "--file-out")==0
+		){
+		return mygit_get_file(argv[3], argv[5], argv[7]);
 	}
-	if(argc==4 && strcmp(argv[1], "del")==0){
-		return mygit_del(argv[2], argv[3]);
+	if(argc==6 && strcmp(argv[1], "del")==0 && strcmp(argv[2], "--db")==0
+		&& strcmp(argv[4], "--id")==0){
+		return mygit_del(argv[3], argv[5]);
 		// set the id to negative
 	}
-	if(argc==4 && strcmp(argv[1], "undel")==0){
-		return mygit_del(argv[2], "-" + QByteArray(argv[3]));
+	if(argc==6 && strcmp(argv[1], "undel")==0 && strcmp(argv[2], "--db")==0
+		&& strcmp(argv[4], "--id")==0){
+		return mygit_del(argv[3], "-" + QByteArray(argv[5]));
 	}
-	if(argc==3 && strcmp(argv[1], "pack")==0){
-		return mygit_pack(argv[2]); // 回收删除的空间
+	if(argc==4 && strcmp(argv[1], "pack")==0 && strcmp(argv[2], "--db")==0){
+		return mygit_pack(argv[3]); // decrease the database file size
 	}
-	if(argc==3 && strcmp(argv[1], "hash")==0 && BEGIN_WITH(argv[2], PREFIX_FILE)){
-		return mygit_hash(argv[2]+strlen(PREFIX_FILE)); // 回收删除的空间
+	if(argc==4 && strcmp(argv[1], "hash")==0 && strcmp(argv[2], "--file")==0){
+		return mygit_hash(argv[3]);
+	}
+	if(argc==4 && strcmp(argv[1], "hash")==0 && strcmp(argv[2], "--value")==0){
+		return mygit_hash_value(argv[3]);
 	}
 
-	std::cout << "usage:\n"
-		<< "mygit add <db-filename> <type> <input-content>\n"
-		<< "mygit add-file <db-filename> <type> <input-filename>\n"
-		<< "mygit dir <db-filename>\n"
-		<< "mygit get <db-filename> <type>\n"
-		<< "mygit get-type <db-filename> <type>\n"
-		<< "mygit get-file <db-filename> <int64-id> <output-filename>\n"
-		<< "mygit del <db-filename> <int64-id>\n"
-		<< "mygit undel <db-filename> <int64-id>\n"
-		<< "mygit pack <db-filename>\n"
-		<< "mygit hash file:<input-filename>\n"
+	std::cerr << "usage:" << std::endl
+		<< "mygit add --db <filename> --type <type> --value <input-content>" << std::endl
+		<< "mygit add --db <filename> --type <type> --file <input-filename>" << std::endl
+		<< "mygit dir --db <filename>" << std::endl
+		<< "mygit get --db <filename> --id <id>" << std::endl
+		<< "mygit get --db <filename> --type <type>" << std::endl
+		<< "mygit get --db <filename> --id <int64> --file-out <filename>" << std::endl
+		<< "mygit del --db <filename> --id <int64>" << std::endl
+		<< "mygit undel --db <filename> --id <int64>" << std::endl
+		<< "mygit pack --db <filename>" << std::endl
+		<< "mygit hash --file <input-filename>" << std::endl
 		;
 
-	return 0; //app.exec();
+	return argc==1 ? 0 : 1; //app.exec();
 }
 
 
