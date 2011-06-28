@@ -39,6 +39,8 @@ HOMEPAGE: https://github.com/huchifeng/mygit
 #pragma comment(lib, "QtWebKit4.lib")
 #endif
 
+#define BEGIN_WITH(a, b) (strncmp(a,b,strlen(b))==0)
+
 struct t_entry{
 	qint64 id;
 	QByteArray hash;
@@ -449,8 +451,10 @@ int mygit_get_file(QString db_filename, QString s_id, QString file){
 int mygit_del(QString db_filename, QByteArray s_id){
 	bool ok;
 	qint64 id = s_id.toLongLong(&ok);
-	if(!ok)
+	if(!ok){
+		qDebug() << "need integer:" << s_id;
 		return 1;
+	}
 	t_db db;
 	db.file.setFileName(db_filename);
 	if(!db.file.open(QIODevice::ReadWrite)){
@@ -511,10 +515,22 @@ int mygit_pack(QString db_filename){
 	db.file.resize(write_pos);
 	return 0;
 }
-
+int mygit_hash(QByteArray filename){
+	QFile input(filename);
+	if(!input.open(QIODevice::ReadOnly)){
+		return 10;
+	}
+	QByteArray hash;
+	if(get_hash(input, hash)!=0){
+		return 3;
+	}
+	std::cout << hash.toHex().constData() << std::endl;
+	return 0;
+}
 int main(int argc, char *argv[]){
     QApplication app(argc, argv); // cannot wchar
 
+	const char* PREFIX_FILE = "file:";
 	if(argc==5 && strcmp(argv[1], "add")==0){
 		return mygit_add(argv[2], argv[3], argv[4]);
 	}
@@ -543,6 +559,9 @@ int main(int argc, char *argv[]){
 	if(argc==3 && strcmp(argv[1], "pack")==0){
 		return mygit_pack(argv[2]); // 回收删除的空间
 	}
+	if(argc==3 && strcmp(argv[1], "hash")==0 && BEGIN_WITH(argv[2], PREFIX_FILE)){
+		return mygit_hash(argv[2]+strlen(PREFIX_FILE)); // 回收删除的空间
+	}
 
 	std::cout << "usage:\n"
 		<< "mygit add <db-filename> <type> <input-content>\n"
@@ -554,6 +573,7 @@ int main(int argc, char *argv[]){
 		<< "mygit del <db-filename> <int64-id>\n"
 		<< "mygit undel <db-filename> <int64-id>\n"
 		<< "mygit pack <db-filename>\n"
+		<< "mygit hash file:<input-filename>\n"
 		;
 
 	return 0; //app.exec();
