@@ -2,6 +2,7 @@ struct t_entry{
 	qint64 id;
 	QByteArray hash;
 	QByteArray type;
+	qint64 pos; // when modify it's useful
 	qint64 bytes_size;
 	qint64 bytes_offset;
 	// of course no data here, data is on disk only, too big
@@ -21,10 +22,18 @@ public:
 	{
 		max_id = 0;
 	}
+	bool get_entry(t_entry& e);
+	bool add_file(QByteArray type, QString file);
+	bool add_data(QByteArray type, const QByteArray &content );
+	bool cmd_dir();
+	bool cmd_get_by_type(QByteArray type);
+	bool cmd_get_by_id(qint64 id);
+	bool cmd_get_by_id_to_file(qint64 id, QString file);
+	bool cmd_del_by_id(qint64 id); // set the id to negative
+	bool cmd_pack(); // decrease the database file size
 	public slots:
 		bool open(QString path);
 private:
-public:
 	QFile file;
 	QMap<qint64, t_entry> map_id_to_entry;
 	QMap<QByteArray, QVector<qint64> > map_hash_to_id;
