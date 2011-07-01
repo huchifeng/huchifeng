@@ -179,18 +179,15 @@ int file_cmp(QFile& d, QFile& s, qint64 size, int& cmp_res){
 	return 0;
 }
 
-bool MyGit::add_file(QByteArray type, QString file)
+qint64 MyGit::add_file(QString type, QString file)
 {
 	QFile input(file);
 	if(!input.open(QIODevice::ReadOnly)){
-		return false;
+		return 0;
 	}
 	t_entry e1;
-	this->max_id ++;
-	e1.id = this->max_id;
-	e1.type = type;
 	if(get_hash(input, e1.hash)!=0){
-		return false;
+		return 0;
 	}
 	std::cerr << e1.hash.toHex().constData() << std::endl;
 	QVector<qint64> same_hash = this->map_hash_to_id[e1.hash];
@@ -207,18 +204,21 @@ bool MyGit::add_file(QByteArray type, QString file)
 			input.seek(0);
 			int cmp_res = 0;
 			if(file_cmp(this->file, input, e2.bytes_size, cmp_res)!=0){
-				return false;
+				return 0;
 			}
 			if(cmp_res == 0){
 				qDebug() << "same hash, same content";
-				std::cout << e2.id;
-				return true;
+				std::cout << e2.id << std::endl;
+				return e2.id;
 			}
 		}
 	}
 
-	qint64 old_pos = this->file.size();
-	this->file.seek(old_pos);
+	this->max_id ++;
+	e1.id = this->max_id;
+	e1.type = type.toUtf8();
+	e1.pos = this->file.size();
+	this->file.seek(e1.pos);
 	this->file.write((char*)&e1.id, sizeof(e1.id));
 	{
 		unsigned char len = e1.type.size();
@@ -230,22 +230,25 @@ bool MyGit::add_file(QByteArray type, QString file)
 		this->file.write((char*)&len, sizeof(len));
 		this->file.write(e1.hash.constData(), e1.hash.size());
 	}
-	qint64 input_size = input.size();
-	this->file.write((char*)&input_size, sizeof(input_size));
+	e1.bytes_size = input.size();
+	this->file.write((char*)&e1.bytes_size, sizeof(e1.bytes_size));
+	e1.bytes_offset = this->file.pos();
 	if(file_append(this->file, input) != 0){
-		this->file.resize(old_pos);
-		return false;
+		this->file.resize(e1.pos);
+		return 0;
 	}
-	std::cout << e1.id;
-	return true;
+	std::cout << e1.id << std::endl;
+	this->map_id_to_entry[e1.id] = e1;
+	this->map_hash_to_id[e1.hash].push_back(e1.id);
+	this->max_id = qMax(this->max_id, e1.id);
+	return e1.id;
 }
 
-bool MyGit::add_data(QByteArray type, const QByteArray &content )
+qint64 MyGit::add_data(QString type1, QString content1 )
 {
+	QByteArray type = type1.toUtf8();
+	QByteArray content = content1.toUtf8();
 	t_entry e1;
-	this->max_id ++;
-	e1.id = this->max_id;
-	e1.type = type;
 	{
 		QCryptographicHash hash(QCryptographicHash::Sha1);
 		hash.addData(content.constData(), content.size());
@@ -269,14 +272,17 @@ bool MyGit::add_data(QByteArray type, const QByteArray &content )
 			int cmp_res = 0;
 			if(memcmp(tmp.constData(), content.constData(), tmp.size())==0){
 				qDebug() << "same hash, same content";
-				std::cout << e2.id;
-				return true;
+				std::cout << e2.id << std::endl;
+				return e2.id;
 			}
 		}
 	}
 
-	qint64 old_pos = this->file.size();
-	this->file.seek(old_pos);
+	this->max_id ++;
+	e1.id = this->max_id;
+	e1.type = type;
+	e1.pos = this->file.size();
+	this->file.seek(e1.pos);
 	this->file.write((char*)&e1.id, sizeof(e1.id));
 	{
 		unsigned char len = e1.type.size();
@@ -288,14 +294,18 @@ bool MyGit::add_data(QByteArray type, const QByteArray &content )
 		this->file.write((char*)&len, sizeof(len));
 		this->file.write(e1.hash.constData(), e1.hash.size());
 	}
-	qint64 input_size = content.size();
-	this->file.write((char*)&input_size, sizeof(input_size));
-	if(this->file.write(content.constData(), content.size()) != input_size){
-		this->file.resize(old_pos);
-		return false;
+	e1.bytes_size = content.size();
+	this->file.write((char*)&e1.bytes_size, sizeof(e1.bytes_size));
+	e1.bytes_offset = this->file.pos();
+	if(this->file.write(content.constData(), content.size()) != e1.bytes_size){
+		this->file.resize(e1.pos);
+		return 0;
 	}
-	std::cout << e1.id;
-	return true;
+	std::cout << e1.id << std::endl;
+	this->map_id_to_entry[e1.id] = e1;
+	this->map_hash_to_id[e1.hash].push_back(e1.id);
+	this->max_id = qMax(this->max_id, e1.id);
+	return e1.id;
 }
 
 
@@ -348,7 +358,7 @@ bool MyGit::cmd_get_by_id(qint64 id){
 	return true;
 }
 
-bool MyGit::cmd_get_by_id_to_file(qint64 id, QString file){
+bool MyGit::save_by_id_to_file(qint64 id, QString file){
 	if(!map_id_to_entry.contains(id))
 		return false;
 	const t_entry& e = map_id_to_entry[id];
@@ -362,28 +372,35 @@ bool MyGit::cmd_get_by_id_to_file(qint64 id, QString file){
 	return file_from(this->file, e.bytes_size, s)==0 ? true : false;
 }
 
-bool MyGit::cmd_del_by_id(qint64 id){
+bool MyGit::del_by_id(qint64 id){
 	if(!map_id_to_entry.contains(id))
 		return false;
 	const t_entry& e = map_id_to_entry[id];
 	file.seek(e.pos);
-	id = -id;
-	file.write((char*)&id, sizeof(id));
+	qint64 new_id = -id;
+	file.write((char*)&new_id, sizeof(new_id));
+	map_id_to_entry[new_id] = e;
+	map_id_to_entry.remove(id);
 	return true;
 }
 
-bool MyGit::cmd_pack(){
+bool MyGit::pack_db(){
 	file.seek(0);
 	qint64 write_pos = 0;
-	for(QMap<qint64, t_entry>::const_iterator it=map_id_to_entry.constBegin();
-		it!=map_id_to_entry.constEnd(); it++)
+	QList<qint64> keys = map_id_to_entry.keys();
+	for(int i=keys.size()-1; i>=0; i--){
+		assert(keys[i]!=0);
+		if(keys[i]<0){
+			keys.removeAt(i);
+		}
+	}
+	qSort(keys);
+	for(int i=0; i<keys.size(); i++)
 	{
-		const t_entry& e = it.value();
+		assert(map_id_to_entry.contains(keys[i]));
+		const t_entry& e = map_id_to_entry[keys[i]];
 		qint64 pos = e.pos;
 		qint64 pos2 = e.bytes_offset + e.bytes_size;
-		if(e.id < 0){
-			continue;
-		}
 		if(write_pos < pos){
 			char buf[100];
 			for(qint64 n = pos2 - pos; n>0;){
@@ -403,7 +420,9 @@ bool MyGit::cmd_pack(){
 		file.seek(pos2);
 	}
 	file.resize(write_pos);
-	return true;
+	QString filename = file.fileName();
+	file.close();
+	return open(filename);
 }
 int mygit_hash(QByteArray filename){
 	QFile input(filename);
@@ -480,7 +499,7 @@ int main(int argc, char *argv[]){
 			if(!ok)
 				return 10;
 			MyGit db;
-			return db.open(argv[3]) && db.cmd_get_by_id_to_file(id, argv[7]) ? 0 : 100;
+			return db.open(argv[3]) && db.save_by_id_to_file(id, argv[7]) ? 0 : 100;
 	}
 	
 	usage += "mygit del --db <filename> --id <int64>\n";
@@ -491,7 +510,7 @@ int main(int argc, char *argv[]){
 			if(id<=0 || !ok)
 				return 10;
 			MyGit db;
-			return db.open(argv[3]) && db.cmd_del_by_id(id) ? 0 : 100;		
+			return db.open(argv[3]) && db.del_by_id(id) ? 0 : 100;		
 	}
 	
 	usage += "mygit undel --db <filename> --id <int64>\n";
@@ -502,13 +521,13 @@ int main(int argc, char *argv[]){
 			if(id<=0 || !ok)
 				return 10;
 			MyGit db;
-			return db.open(argv[3]) && db.cmd_del_by_id(-id) ? 0 : 100;		
+			return db.open(argv[3]) && db.del_by_id(-id) ? 0 : 100;		
 	}
 	
 	usage += "mygit pack --db <filename>\n";
 	if(argc==4 && strcmp(argv[1], "pack")==0 && strcmp(argv[2], "--db")==0){
 		MyGit db;
-		return db.open(argv[3]) && db.cmd_pack() ? 0 : 100;
+		return db.open(argv[3]) && db.pack_db() ? 0 : 100;
 	}
 	
 	usage += "mygit hash --file <input-filename>\n";
@@ -546,6 +565,9 @@ extern "C" _declspec(dllexport) QObject* createMyGit(QObject* parent){
 
 bool MyGit::open(QString db_filename){
 	//qDebug() << p;
+	map_id_to_entry.clear();
+	map_hash_to_id.clear();
+	max_id = 0;
 	file.setFileName(db_filename);
 	if(!file.open(QIODevice::ReadWrite)){
 		// will create file if not exists
@@ -559,4 +581,17 @@ bool MyGit::open(QString db_filename){
 	return true;
 }
 
+qint64 MyGit::fileSize()
+{
+	return file.size();
+}
 
+bool MyGit::contains( qint64 id )
+{
+	return map_id_to_entry.contains(id);
+}
+
+bool MyGit::undel_by_id( qint64 id )
+{
+	return del_by_id(-id);
+}

@@ -9,6 +9,7 @@ struct t_entry{
 
 	t_entry(){
 		id = 0;
+		pos = 0;
 		bytes_size = 0;
 		bytes_offset = 0;
 	}
@@ -22,17 +23,23 @@ public:
 	{
 		max_id = 0;
 	}
-	bool get_entry(t_entry& e);
-	bool add_file(QByteArray type, QString file);
-	bool add_data(QByteArray type, const QByteArray &content );
+	// cmd_* print outout
 	bool cmd_dir();
 	bool cmd_get_by_type(QByteArray type);
 	bool cmd_get_by_id(qint64 id);
-	bool cmd_get_by_id_to_file(qint64 id, QString file);
-	bool cmd_del_by_id(qint64 id); // set the id to negative
-	bool cmd_pack(); // decrease the database file size
+
 	public slots:
 		bool open(QString path);
+		qint64 add_file(QString type, QString file);
+		qint64 add_data(QString type, QString content );
+		bool save_by_id_to_file(qint64 id, QString file);
+		bool del_by_id(qint64 id); // set the id to negative
+		bool undel_by_id(qint64 id);
+		bool pack_db(); // decrease the database file size
+		qint64 fileSize();
+		bool contains(qint64 id);
+private:
+	bool get_entry(t_entry& e);
 private:
 	QFile file;
 	QMap<qint64, t_entry> map_id_to_entry;

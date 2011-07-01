@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mygit", "mygit.vcproj", "{44FE8842-2BEF-45FC-BB69-7757A45AF273}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mygitlib", "mygitlib.vcproj", "{B8D174F5-51AD-43AD-AF4E-D3D864833FDE}"
+	ProjectSection(ProjectDependencies) = postProject
+		{44FE8842-2BEF-45FC-BB69-7757A45AF273} = {44FE8842-2BEF-45FC-BB69-7757A45AF273}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
