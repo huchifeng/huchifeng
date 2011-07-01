@@ -22,6 +22,7 @@ HOMEPAGE: https://github.com/huchifeng/mygit
 */
 
 #include "stdafx.h"
+#include "mygit.h"
 
 #ifdef _DEBUG
 #pragma comment(lib, "qtmaind.lib")
@@ -41,29 +42,8 @@ HOMEPAGE: https://github.com/huchifeng/mygit
 
 #define BEGIN_WITH(a, b) (strncmp(a,b,strlen(b))==0)
 
-struct t_entry{
-	qint64 id;
-	QByteArray hash;
-	QByteArray type;
-	qint64 bytes_size;
-	qint64 bytes_offset;
 
-	t_entry(){
-		id = 0;
-		bytes_size = 0;
-		bytes_offset = 0;
-	}
-};
-struct t_db{
-	QFile file;
-	QMap<qint64, t_entry> map_id_to_entry;
-	QMap<QByteArray, QVector<qint64> > map_hash_to_id;
-	qint64 max_id;
-	t_db(){
-		max_id = 0;
-	}
-};
-int mygit_get_entry(t_db& db, t_entry& e){
+int mygit_get_entry(MyGit& db, t_entry& e){
 	{
 		int n = db.file.read((char*)&e.id, sizeof(e.id));
 		if(n == 0){
@@ -201,7 +181,7 @@ int file_cmp(QFile& d, QFile& s, qint64 size, int& cmp_res){
 int mygit_add_file(QString db_filename, QByteArray type, QString file){
 	if(type.size()>255)
 		return 100;
-	t_db db;
+	MyGit db;
 	db.file.setFileName(db_filename);
 	if(!db.file.open(QIODevice::ReadWrite)){
 		// will create file if not exists
@@ -275,7 +255,7 @@ int mygit_add_file(QString db_filename, QByteArray type, QString file){
 int mygit_add(QString db_filename, QByteArray type, QByteArray content){
 	if(type.size()>255)
 		return 100;
-	t_db db;
+	MyGit db;
 	db.file.setFileName(db_filename);
 	if(!db.file.open(QIODevice::ReadWrite)){
 		// will create file if not exists
@@ -353,7 +333,7 @@ std::ostream& operator<<(std::ostream& o, QString b)
 	return o;
 }
 int mygit_dir(QString db_filename){
-	t_db db;
+	MyGit db;
 	db.file.setFileName(db_filename);
 	if(!db.file.open(QIODevice::ReadWrite)){
 		// will create file if not exists
@@ -370,7 +350,7 @@ int mygit_dir(QString db_filename){
 	return 0;
 }
 int mygit_get_type(QString db_filename, QByteArray type){
-	t_db db;
+	MyGit db;
 	db.file.setFileName(db_filename);
 	if(!db.file.open(QIODevice::ReadWrite)){
 		// will create file if not exists
@@ -397,7 +377,7 @@ int mygit_get(QString db_filename, QByteArray s_id){
 	qint64 id = s_id.toLongLong(&ok);
 	if(!ok)
 		return 1;
-	t_db db;
+	MyGit db;
 	db.file.setFileName(db_filename);
 	if(!db.file.open(QIODevice::ReadWrite)){
 		// will create file if not exists
@@ -424,7 +404,7 @@ int mygit_get_file(QString db_filename, QString s_id, QString file){
 	qint64 id = s_id.toLongLong(&ok);
 	if(!ok)
 		return 1;
-	t_db db;
+	MyGit db;
 	db.file.setFileName(db_filename);
 	if(!db.file.open(QIODevice::ReadWrite)){
 		// will create file if not exists
@@ -457,7 +437,7 @@ int mygit_del(QString db_filename, QByteArray s_id){
 		qDebug() << "need integer:" << s_id;
 		return 1;
 	}
-	t_db db;
+	MyGit db;
 	db.file.setFileName(db_filename);
 	if(!db.file.open(QIODevice::ReadWrite)){
 		// will create file if not exists
@@ -480,7 +460,7 @@ int mygit_del(QString db_filename, QByteArray s_id){
 }
 
 int mygit_pack(QString db_filename){
-	t_db db;
+	MyGit db;
 	db.file.setFileName(db_filename);
 	if(!db.file.open(QIODevice::ReadWrite)){
 		// will create file if not exists
@@ -535,6 +515,8 @@ int mygit_hash_value(QByteArray value){
 	std::cout <<  hash.result().toHex().constData() << std::endl;
 	return 0;
 }
+
+
 int main(int argc, char *argv[]){
     QApplication app(argc, argv); // cannot wchar
 
@@ -603,5 +585,19 @@ int main(int argc, char *argv[]){
 }
 
 
+extern "C" _declspec(dllexport) QObject* createMyGit(QObject* parent){
+	//qDebug() << "param" << param;
+	//*result = "result";
+	//qRegisterMetaType<FramelessDialog>("FramelessDialog");
+	MyGit* ret = new MyGit(parent);
+	return ret;
+}
 
 
+
+
+
+bool MyGit::open(QString p){
+	qDebug() << p;
+	return true;
+}
