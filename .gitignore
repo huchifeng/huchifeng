@@ -14,3 +14,7 @@
 /tester.exe
 /tester.ilk
 /tester.pdb
+/Debug/algorithms-sort.obj
+/Debug/heap-sort.obj
+/Debug/merge-sort.obj
+/merge-sort.cpp.bak
