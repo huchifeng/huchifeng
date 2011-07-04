@@ -184,10 +184,15 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\heap-sort.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\quick-sort.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
+					ExcludedFromBuild="true"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -215,6 +220,10 @@
 		</Filter>
 		<File
 			RelativePath=".\README.txt"
+			>
+		</File>
+		<File
+			RelativePath=".\sort.txt"
 			>
 		</File>
 	</Files>

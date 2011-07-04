@@ -26,18 +26,51 @@ HOMEPAGE: https://github.com/huchifeng/huchifeng
 using namespace std;
 
 #define XCHG(T, a, b) do{T t=(a); (a)=(b); (b)=t; }while(0)
-
 #define LESS(a,b) ((int)(a) < (int)(b))
 //#define LESS(a,b) ((a) < (b))
 
-void bubble_sort(double* a, int n)
+void make_sub_heap(double* a, int n, int i)
 {
-	for(int i=0; i<n; i++){
-		for(int j=1; j<n-i; j++){
-			if(LESS(a[j], a[j-1])){
-				XCHG(double, a[j], a[j-1]);
-			}
+	int largest = i;
+	largest = i*2+1<n && LESS(a[largest], a[i*2+1]) ? i*2+1 : largest;
+	largest = i*2+2<n && LESS(a[largest], a[i*2+2]) ? i*2+2 : largest;
+	if(largest != i)
+	{
+		XCHG(double, a[i], a[largest]);
+		make_sub_heap(a, n, largest);
+	}
+}
+
+void heap_sort(double* a, int n){
+	// make heap
+	// from root to leaves, the indices are
+	// 0
+	// 01 10
+	// 011 100 101 110
+	// 0111 1000 1001 1010 1011 1100 1101 1110
+	// to find parent(i), just (i-1)/2 
+	// children(p) : 2*p+1, 2*p+2
+	for(int i=n/2-1; i>=0; i--)
+	{
+		make_sub_heap(a, n, i);
+	}
+	// -- check heap --
+	bool is_heap = true;
+	for(int i=n-1; i>0; i--)
+	{
+		int p = (i-1)/2;
+		if(LESS(a[p], a[i]))
+		{
+			is_heap = false;
+			//cerr << "wrong at:" << i << "," << a[i] << ","<<p<<","<<a[p]<<endl;
+			break;
 		}
+	}
+	cerr << (is_heap ? "is heap" : "not a heap") << endl;
+	for(int i=n-1; i>0; i--)
+	{
+		XCHG(double, a[i], a[0]);
+		make_sub_heap(a, i, 0);
 	}
 }
 
@@ -69,9 +102,8 @@ void main()
 	for(int i=0, n=a.size(); i<n; i++)
 		cerr << a[i] << ", ";
 	cerr << endl;
-	// --- bubble sort ---
-	// it's stable
-	bubble_sort(&a.front(), a.size());
+	// --- sort ---
+	heap_sort(&a.front(), a.size());
 
 	// --- print ---
 	for(int i=0, n=a.size(); i<n; i++)

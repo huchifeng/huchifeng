@@ -1,0 +1,11 @@
+merge sort:
+	O(N*log(N))
+	stable
+
+
+
+bogo sort:
+    randomize whole seq, if not sorted, try again;
+    time: mean O(n * n!); maybe infinite;
+
+
