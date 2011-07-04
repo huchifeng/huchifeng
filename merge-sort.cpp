@@ -20,6 +20,11 @@ HOMEPAGE: https://github.com/huchifeng/huchifeng
 
 */
 
+/*
+ merge sort, invented by John von Neumann in 1945
+
+
+*/
 #include <time.h>
 #include <iostream>
 #include <vector>
@@ -30,29 +35,27 @@ using namespace std;
 #define LESS(a,b) ((int)(a) < (int)(b))
 //#define LESS(a,b) ((a) < (b))
 
-void quick_sort(double* a, int n){
-	// it's un stable
-BEGIN:
+
+void merge_sort(double* a, int n, double *t){
 	if(n<=1)
 		return;
-	double x = a[0];
-	int k = 0;
-	for(int i=1; i<n; i++){
-		if(LESS(a[i], x)){
-			k ++;
-			if(k<i)
-				XCHG(double, a[i], a[k]);
+	int m = n/2;
+	if(m > 1)
+		merge_sort(a, m, t);
+	if(n - m > 1)
+		merge_sort(a+m, n-m, t+m);
+	// -- merge --
+	for(int i=0, j=m; i<m || j<n; ){
+		if(i<m && (j>=n || !LESS(a[j], a[i]))){
+			t[i+j-m] = a[i];
+			i ++;
+		}
+		else{
+			t[i+j-m] = a[j];
+			j ++;
 		}
 	}
-	XCHG(double, a[0], a[k]);
-	if(k > 1)
-		quick_sort(a, k);
-	if(k < n-2){
-		a = a + k + 1;
-		n = n-1-k;
-		goto BEGIN; // Tail Recursion  ?
-		//quick_sort(a+k+1, n-1-k);
-	}
+	memcpy(a, t, n*sizeof(a[0]));
 }
 
 void rand_sort(void* x, int m, int n)
@@ -84,9 +87,10 @@ void main()
 	for(int i=0, n=a.size(); i<n; i++)
 		cerr << a[i] << ", ";
 	cerr << endl;
-	// --- quick sort ---
-	quick_sort(&a.front(), a.size());
-
+	// --- sort ---
+	vector<double> t;
+	t.resize(a.size());
+	merge_sort(&a.front(), a.size(), &t.front());
 
 	// --- print ---
 	for(int i=0, n=a.size(); i<n; i++)

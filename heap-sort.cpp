@@ -20,6 +20,7 @@ HOMEPAGE: https://github.com/huchifeng/huchifeng
 
 */
 
+#include <time.h>
 #include <iostream>
 #include <vector>
 #include <assert.h>
@@ -87,6 +88,7 @@ void rand_sort(void* x, int m, int n)
 
 void main()
 {
+	srand(time(NULL));
 	// --- init ---
 	vector<double> a;
 	a.resize(100);
