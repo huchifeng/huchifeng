@@ -1,0 +1,44 @@
+﻿<html>
+<head>
+<title>disk list</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+</head>
+<style>
+
+</style>
+<script src="json2.js" /> </script>
+</head>
+<body >
+<input type=button 
+  value="alert(String.fromCharCode(65)) // 显示A"
+  onclick="eval(this.value)"
+/>
+<br/>
+<input type=button 
+  value="alert(String.fromCharCode(1))"
+  onclick="eval(this.value)"
+/>
+<br/>
+<input type=button 
+  value="alert('中文ABC'.charCodeAt(0).toString(16))"
+  onclick="eval(this.value)"
+/>
+<br/>
+<input type=button 
+  value="alert(JSON.stringify([1,2,3,
+	String.fromCharCode(0),
+	String.fromCharCode(65),
+	String.fromCharCode(0x4e2d),
+	'\u4e2d\u5e2d\u4f2d\u4e3d\u4e2eABC',
+	99]))"
+  onclick="eval(this.value)"
+/>
+<br/>
+
+
+<script>
+
+</script>
+
+</body>
+</html>
