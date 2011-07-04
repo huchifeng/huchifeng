@@ -48,7 +48,7 @@ bool MyGit::get_entry(t_entry& e){
 	{
 		int n = this->file.read((char*)&e.id, sizeof(e.id));
 		if(n == 0){
-			qDebug() << "open db fail";
+			qDebug() << "open db fail" << file.pos() << file.size();
 			return false;
 		}
 		if(n != sizeof(e.id) || e.id==0){
@@ -530,6 +530,12 @@ int main(int argc, char *argv[]){
 		return db.open(argv[3]) && db.pack_db() ? 0 : 100;
 	}
 	
+	usage += "mygit fsck --db <filename>\n";
+	if(argc==4 && strcmp(argv[1], "fsck")==0 && strcmp(argv[2], "--db")==0){
+		MyGit db;
+		return db.fsck(argv[3]) ? 0 : 100;
+	}
+
 	usage += "mygit hash --file <input-filename>\n";
 	if(argc==4 && strcmp(argv[1], "hash")==0 && strcmp(argv[2], "--file")==0){
 		return mygit_hash(argv[3]);
@@ -571,6 +577,7 @@ bool MyGit::open(QString db_filename){
 	file.setFileName(db_filename);
 	if(!file.open(QIODevice::ReadWrite)){
 		// will create file if not exists
+		qDebug() << "cannot open file" << db_filename;
 		return false;
 	}
 	while(file.pos() != file.size()){
@@ -594,4 +601,27 @@ bool MyGit::contains( qint64 id )
 bool MyGit::undel_by_id( qint64 id )
 {
 	return del_by_id(-id);
+}
+
+bool MyGit::fsck(QString db_filename)
+{
+	file.setFileName(db_filename);
+	if(!file.open(QIODevice::ReadWrite)){
+		// will create file if not exists
+		qDebug() << "cannot open file" << db_filename;
+		return false;
+	}
+	while(file.pos() != file.size()){
+		t_entry e;
+		if(!get_entry(e))
+			return false;
+		if(e.bytes_offset+e.bytes_size > file.size()){
+			qDebug() << "id" << (e.id) << " is not complete, "
+				<< " file will resize from " << file.size() << "to" << e.pos;
+			file.resize(e.pos);
+			return false;
+		}
+	}
+	qDebug() << "file system is clean";
+	return true;
 }

@@ -36,6 +36,7 @@ public:
 		bool del_by_id(qint64 id); // set the id to negative
 		bool undel_by_id(qint64 id);
 		bool pack_db(); // decrease the database file size
+		bool fsck(QString db_filename);
 		qint64 fileSize();
 		bool contains(qint64 id);
 private:

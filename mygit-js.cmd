@@ -17,6 +17,7 @@ catch(e){
 	app.log(e);
 	throw(1);
 }
+// TODO: write a html GUI version for mygit interface, use mygitlib.dll instead of mygit.exe
 
 function main(){
 	// process redirect output "dir /s /b /a:-d" not reliable
