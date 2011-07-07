@@ -15,6 +15,7 @@ bogo sort:
 
 //#include "bubble-sort.cpp"
 //#include "quick-sort.cpp"
-//#include "heap-sort.cpp"
-#include "merge-sort.cpp"
+#include "heap-sort.cpp"
+//#include "merge-sort.cpp"
+//#include "gnome-sort.cpp"
 

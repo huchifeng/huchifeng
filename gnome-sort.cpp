@@ -30,61 +30,42 @@ using namespace std;
 #define LESS(a,b) ((int)(a) < (int)(b))
 //#define LESS(a,b) ((a) < (b))
 
-void make_sub_heap_1(double* a, int n, int i)
-{
-	int largest = i;
-	largest = i*2+1<n && LESS(a[largest], a[i*2+1]) ? i*2+1 : largest;
-	largest = i*2+2<n && LESS(a[largest], a[i*2+2]) ? i*2+2 : largest;
-	if(largest != i)
-	{
-		XCHG(double, a[i], a[largest]);
-		make_sub_heap_1(a, n, largest);
-	}
-}
-void make_sub_heap(double* a, int n, int i)
-{
-	// non-recursive version, or tail recursive
-	while(1){
-		int largest = i;
-		largest = i*2+1<n && LESS(a[largest], a[i*2+1]) ? i*2+1 : largest;
-		largest = i*2+2<n && LESS(a[largest], a[i*2+2]) ? i*2+2 : largest;
-		if(largest == i)
-			return;
-		XCHG(double, a[i], a[largest]);
-		i = largest; // make_sub_heap_1(a, n, largest);
-	}
-}
 
-void heap_sort(double* a, int n){
-	// make heap
-	// from root to leaves, the indices are
-	// 0
-	// 01 10
-	// 011 100 101 110
-	// 0111 1000 1001 1010 1011 1100 1101 1110
-	// to find parent(i), just (i-1)/2 
-	// children(p) : 2*p+1, 2*p+2
-	for(int i=n/2-1; i>=0; i--)
+void gnome_sort(double* a, int n){
+	// need only one loop
+	for(int i=1; i<n; )
 	{
-		make_sub_heap(a, n, i);
-	}
-	// -- check heap --
-	bool is_heap = true;
-	for(int i=n-1; i>0; i--)
-	{
-		int p = (i-1)/2;
-		if(LESS(a[p], a[i]))
+		if(LESS(a[i], a[i-1]))
 		{
-			is_heap = false;
-			//cerr << "wrong at:" << i << "," << a[i] << ","<<p<<","<<a[p]<<endl;
-			break;
+			XCHG(double, a[i], a[i-1]);
+			if(i>1){
+				i --;
+				continue;
+			}
 		}
+		i ++;
 	}
-	cerr << (is_heap ? "is heap" : "not a heap") << endl;
-	for(int i=n-1; i>0; i--)
+}
+void gnome2_sort(double* a, int n){
+	// it's actually insertion sort, after some optimization it's more apparent
+	for(int i=1, last=0; i<n; )
 	{
-		XCHG(double, a[i], a[0]);
-		make_sub_heap(a, i, 0);
+		if(LESS(a[i], a[i-1]))
+		{
+			XCHG(double, a[i], a[i-1]);
+			if(i>1){
+				if(last == 0)
+					last = i;
+				i --;
+				continue;
+			}
+		}
+		if(last > 0){
+			i = last;
+			last = 0;
+			continue;
+		}
+		i ++;
 	}
 }
 
@@ -118,7 +99,7 @@ void main()
 		cerr << a[i] << ", ";
 	cerr << endl;
 	// --- sort ---
-	heap_sort(&a.front(), a.size());
+	gnome2_sort(&a.front(), a.size());
 
 	// --- print ---
 	for(int i=0, n=a.size(); i<n; i++)
