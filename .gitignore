@@ -34,3 +34,4 @@
 /test.suo.old
 /test.vcxproj.filters
 /test.vcxproj.user
+*.opensdf
