@@ -26,65 +26,63 @@ HOMEPAGE: https://github.com/huchifeng/huchifeng
 #include <iostream>
 #include <string>
 #include <vector>
+#include <algorithm>
 #include <assert.h>
 using namespace std;
 
-int myfind(vector<string>& a, int begin, int end, const string& k, bool first, int *begin2=NULL, int *end2=NULL){
-	if(begin2)
-		*begin2 = begin;
-	if(end2)
-		*end2 = end;
-	int b = begin;
-	int e = end - 1;
-	int klen = k.length();
-	int res = 1;
-	while(b < e){
-		int c = (b+e)/2;
-		res = strncmp(a[c].c_str(), k.c_str(), klen);
-		if(res > 0){
-			e = c - 1;
-			if(end2)
-				* end2 = c;
-		}
-		else if(res < 0){
-			b = c + 1;
-			if(begin2)
-				* begin2 = b;
-		}
-		else{
-			if(first)
-				e = c;
-			else{
-				if(e==b+1){
-					if(strncmp(a[e].c_str(), k.c_str(), klen)==0){
-						return e;
-					}
-					return b;
-				}
-				b = c;
-			}
+int int_cmp(const void* a, const void* b){
+	return *(int*)a > *(int*)b ? 1 : *(int*)a < *(int*)b ? -1 : 0;
+}
+#define XCHG(T, a, b) do{T t=(a); (a)=(b); (b)=t; }while(0)
+#define LESS(a,b) ((int)(a) < (int)(b))
+
+void my_nth(int* a, int nth, int n){
+	if(n<=1)
+		return;
+	int x = a[0];
+	int k = 0;
+	for(int i=1; i<n; i++){
+		if(LESS(a[i], x)){
+			k ++;
+			if(k<i)
+				XCHG(int, a[i], a[k]);
 		}
 	}
-	if(b == e && res==0)
-		return b;
-	return -1;
+	XCHG(int, a[0], a[k]);
+	if(k == nth)
+		return;
+	if(k < nth){
+		my_nth(a+k+1, nth-k-1, n-k-1);
+	}
+	else{
+		my_nth(a, nth, k);
+	}
 }
 
 void main()
 {
-	vector<string> a;
+	vector<int> a;
 	a.resize(120);
 	for(int i=0; i<a.size(); i++){
 		char b[100];
-		sprintf(b, "%06d", i*i); 
-		a[i] = b;
+		a[i] = rand(); //%a.size();
 	}
 	for(int i=0; i<a.size(); i++)
 		cerr << i << ":" << a[i] << endl;
-	int begin2, end2;
-	cerr << myfind(a, 0, a.size(), "0001", true, &begin2, &end2) << endl;
-	cerr << begin2 << "~" << end2 << endl;
-	cerr << myfind(a, begin2, end2, "0001", false) << endl;
+	int nth = 13;
+	if(a.size()>0){
+		//qsort(&a.front(), a.size(), sizeof(a[0]), int_cmp);
+		//nth_element(a.begin(), a.begin()+nth, a.end());
+		my_nth(&a[0], nth, a.size());
+	}
+	for(int i=0; i<a.size(); i++){
+		if(!(i<nth && a[i]<a[nth] || i==nth || i>nth && a[i]>=a[nth])){
+			cerr << i << "," << a[i] << " vs " << nth << "," << a[nth] << endl;
+			assert(0);
+		}
+	}
+	for(int i=0; i<a.size(); i++)
+		cerr << i << ":" << a[i] << endl;
 }
 
 
