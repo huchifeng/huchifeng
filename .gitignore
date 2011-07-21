@@ -35,3 +35,4 @@
 /test.vcxproj.filters
 /test.vcxproj.user
 *.opensdf
+*.bak
