@@ -1,4 +1,5 @@
-﻿学习各种算法用。
+﻿repository, for algorithm learning, and design-patterm, asm, .... etc.
+
 huchifeng@gmail.com
 
 
