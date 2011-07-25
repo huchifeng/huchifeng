@@ -47,7 +47,19 @@ ZIG-ZAG: z(A y(x(B C) D)) -> x(z(A B) y(C D)); //  == ZIG(x) ZAG(x)
 
 2. top-down
 
+when search x, put small_then(x) to left tree 'L', bigger_then(x) to right tree 'R';
+ sub tree under x is (A, B)
+ then new tree will be x(L(null A) R(B null)) so it's called splay!
 
+for tree X, left(X) is left(smallest(X)), right(X) is right(biggest(X))
+  then X can be drawn as a single node;
+
+
+3.
+
+semi-splay tree: 
+  don't need to move x to root.
+  for z(y(x(A B) C) D) -> y(x(A B) z(C D)); then use y to rotate, not x;
 
 */
 
