@@ -27,6 +27,7 @@ data structure same with standard BST(Binary search tree )
 most recent node will be the root
 
 splay operation move x to root, and decrease the depth by about half for the nodes on the path
+  // for example, degenerated tree 0->1->2 .... ->n, then access n, got a tree with depth about n/2
 
 splay tree without parent field is also possible.
 

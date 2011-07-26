@@ -59,7 +59,9 @@ for tree X, left(X) is left(smallest(X)), right(X) is right(biggest(X))
 
 semi-splay tree: 
   don't need to move x to root.
-  for z(y(x(A B) C) D) -> y(x(A B) z(C D)); then use y to rotate, not x;
+     access x again will make it closer to root.
+  for ZIG-ZIG: z(y(x(A B) C) D) -> y(x(A B) z(C D)); do ZIG(y) only; then use y to rotate, not x;
+  for ZIG-ZAG, same with splay tree.
 
 */
 
@@ -76,12 +78,10 @@ template<class T>
 struct node{
 	struct node* left;
 	struct node* right;
-	struct node* parent;
 	T t;
 	node(){
 		left = NULL;
 		right = NULL;
-		parent = NULL;
 	}
 };
 
@@ -105,23 +105,7 @@ node<T>* new_node(T &t){
 }
 
 
-template<class T>
-node<T>* insert(node<T>*& root, T t){
-	if( ! root){
-		root = new_node(t);
-		return root;
-	}
-	if(t < root->t){
-		node<T>* ret = insert(root->left, t);
-		root->left->parent = root;
-		return ret;
-	}
-	else{
-		node<T>* ret = insert(root->right, t);
-		root->right->parent = root;
-		return ret;
-	}
-}
+
 template<class T>
 void print(node<T>* root, vector<bool>& has_brother){
 	if(!root)
@@ -168,155 +152,81 @@ int depth(node<T>* root){
 	return !root ? 0 : 1 + max(depth(root->left), depth(root->right));
 }
 template<class T>
-void check_valid(node<T>* root){
-	if(!root)
-		return;
-	if(root->left)
-		assert(root->left->parent == root);
-	if(root->right)
-		assert(root->right->parent == root);
-	check_valid(root->left);
-	check_valid(root->right);
+int count(node<T>* root){
+	return !root ? 0 : 1 + count(root->left) + count(root->right);
 }
 template<class T>
-void rotate_to_root(node<T>*& root, node<T>* n){
-	// this method has no use to decrease the height of the whole tree
-	if(root == n)
+node<T>* splay(node<T>* root, T t){
+	if(!root)
+		return NULL; // no insert
+	node<T> N;
+	node<T>* right_tree = &N; // trace min(bigger(x))
+	node<T>* left_tree = &N; // trace max(less(x))
+	while(1){
+		if(t < root->t)
+		{
+			if(root->left == NULL)
+				break;
+			if(t < root->left->t){
+				node<T> *y = root->left;
+				root->left = y->right;
+				y->right = root;
+				root = y;
+				if(root->left == NULL)
+					break;
+			}
+			right_tree->left = root;
+			right_tree = root;
+			root = root->left; // no need to break right_tree->left, will be set after break the loop
+			continue;
+		}
+		if(t > root->t){
+			if(root->right == NULL)
+				break;
+			if(t > root->right->t){
+				node<T> *y = root->right;
+				root->right = y->left;
+				y->left = root;
+				root = y;
+				if(root->right == NULL)
+					break;
+			}
+			left_tree->right = root;
+			left_tree = root;
+			root = root->right;
+			continue;
+		}
+		break;
+	}
+	left_tree->right = root->left;
+	right_tree->left = root->right;
+	root->left = N.right;
+	root->right = N.left;
+	return root;
+}
+template<class T>
+void splay_insert(node<T>*& root, T k){
+	root = splay(root, k);
+	if(!root){
+		root = new_node<T>(k);
 		return;
-	if(n->t < root->t){
-		rotate_to_root(root->left, n);
-		assert(root->left == n);
-		node<T>* n_right = n->right;
+	}
+	if(k < root->t){
+		node<T>* n = new_node<T>(k);
+		n->left = root->left;
 		n->right = root;
-		root->parent = n;
-		root->left = n_right;
-		if(n_right)
-			n_right->parent = root;
+		root->left = NULL;
 		root = n;
 		return;
 	}
-	else{
-		rotate_to_root(root->right, n);
-		assert(root->right == n);
-		node<T>* n_left = n->left;
+	else if(k > root->t){
+		node<T>* n = new_node<T>(k);
+		n->right = root->right;
 		n->left = root;
-		root->parent = n;
-		root->right = n_left;
-		if(n_left)
-			n_left->parent = root;
+		root->right = NULL;
 		root = n;
 		return;
 	}
-}
-template<class T>
-void rotate_left(node<T>* p){
-	node<T>* n = p->left;
-	node<T>* tmp = n->right;
-	node<T>* pp = p->parent;
-	n->right = p;
-	p->parent = n;
-	p->left = tmp;
-	if(tmp)
-		tmp->parent = p;
-	n->parent = pp;
-	if(pp){
-		if(pp->left == p){
-			pp->left = n;
-		}
-		else{
-			assert(pp->right==p);
-			pp->right = n;
-		}
-	}
-}
-template<class T>
-void rotate_right(node<T>* p){
-	node<T>* n = p->right;
-	node<T>* tmp = n->left;
-	node<T>* pp = p->parent;
-	n->left = p;
-	p->parent = n;
-	p->right = tmp;
-	if(tmp)
-		tmp->parent = p;
-	n->parent = pp;
-	if(pp){
-		if(pp->left == p){
-			pp->left = n;
-		}
-		else{
-			assert(pp->right==p);
-			pp->right = n;
-		}
-	}
-}
-template<class T>
-void rotate_to_root(node<T>* n){
-	while(n->parent)
-	{
-		node<T>* p = n->parent;
-		node<T>* pp = p->parent;
-		if(!pp){
-			if(p->left == n){
-				rotate_left(p);
-			}
-			else{
-				assert(p->right == n);
-				rotate_right(p);
-			}
-			continue;
-		}
-		if(pp->left ==p){
-			if(p->left==n){
-				rotate_left(pp);
-				rotate_left(p);
-				continue;
-			}
-			assert(p->right==n);
-			rotate_right(p);
-			rotate_left(pp);
-			continue;
-		}
-		assert(pp->right ==p);
-		if(p->right==n){
-			rotate_right(pp);
-			rotate_right(p);
-			continue;
-		}
-		assert(p->left==n);
-		rotate_left(p);
-		rotate_right(pp);
-		continue;
-	}
-}
-template<class T>
-node<T>* find(node<T>* root, T t){
-	if(!root)
-		return NULL;
-	if(t== root->t){
-		return root;
-	}
-	if(t < root->t){
-		return find(root->left, t);
-	}
-	else{
-		return find(root->right, t);
-	}
-}
-template<class T>
-void access(node<T>*& root, T k){
-	node<int>* n = find(root, k);
-	rotate_to_root(n);
-	assert(n->parent == NULL);
-	root = n;
-}
-
-void make_mid_order(int* a, int n, int* b){
-	if(n<=0)
-		return;
-	b[0] = a[n/2];
-	make_mid_order(a, n/2, b+1);
-	make_mid_order(a+n/2+1, n-(n/2+1), b+n/2+1);
 }
 
 void main()
@@ -326,37 +236,18 @@ void main()
 	a.resize(30);
 	for(int i=0; i<a.size(); i++)
 		a[i] = i;
-	vector<int> b = a;
-	make_mid_order(&a[0], a.size(), &b[0]);
-	//a = b;
-	//rand_sort(&(a[0]), sizeof(a[0]), a.size());
+	rand_sort(&(a[0]), sizeof(a[0]), a.size());
 
 	node<int>* root = NULL;
-	for(int i=0; i<a.size(); i++){
-		cerr << a[i] << endl;
-	}
-	for(int i=0; i<a.size(); i++){
-		node<int>* n = insert(root, a[i]);
-		//access(root, a[i]);
-	}
 	vector<bool> has_brother;
-	print_mid(root, has_brother);
 	for(int i=0; i<a.size(); i++){
-		//access(root, (int)(a.size()/2));
-		//access(root, (int)(rand()%a.size()));//
+		//cerr << a[i] << endl;
 	}
-	//for(int i=0; i<1; i++){
-	//	access(root, 0);
-	//	print_mid(root, has_brother);
-	//	access(root, (int)a.size()-1);
-	//	print_mid(root, has_brother);
-	//}
-	for(int i=0; i<b.size(); i++){
-		access(root, b[b.size()-1-i]); // make it very close to balanced
+	for(int i=0; i<a.size(); i++){
+		splay_insert(root, a[i]);
 		print_mid(root, has_brother);
 	}
 	cerr << "depth:" << depth(root) << endl;
-	//print(root, has_brother);
-	check_valid(root);
+	cerr << "count:" << count(root) << endl;
 }
 

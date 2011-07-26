@@ -96,10 +96,13 @@
     <None Include="README.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="test-AVL-tree.cpp" />
     <ClCompile Include="test-binary-search-tree.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="test-splay-tree-topdown.cpp" />
+    <ClCompile Include="test-splay-tree-topdown.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="test-splay-tree.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
