@@ -90,6 +90,10 @@ void insert(node<T>*& root, T t){
 	else{
 		insert(root->right, t);
 	}
+	re_balance(root);
+}
+template<class T>
+void re_balance(node<T>*& root){
 	root->calc_depth();
 	// check restore balance !
 	if(root->left_depth() - root->right_depth() > 1){
@@ -202,12 +206,66 @@ void check_balance(node<T>* root){
 	assert(old == root->depth);
 	assert(abs(root->left_depth() - root->right_depth())<=1);
 }
+template<class T>
+void remove(node<T>*& root, T t){
+	if(!root)
+		return;
+	if(root->t==t){
+		// move to leaf
+		if(root->left){
+			vector<node<T>*> vp;
+			node<T>* n = root->left;
+			while(n->right!=NULL){
+				vp.push_back(n);
+				n = n->right;
+			}
+			root->t = n->t;
+			delete n;
+			if(vp.size()>0)
+				vp.back()->right = NULL;
+			else
+				root->left = NULL;
+			for(int i=vp.size()-1; i>=0; i--)
+				re_balance(vp[i]);
+			re_balance(root);
+			return;
+		}
+		else if(root->right){
+			vector<node<T>*> vp;
+			node<T>* n = root->right;
+			while(n->left!=NULL){
+				vp.push_back(n);
+				n = n->left;
+			}
+			root->t = n->t;
+			delete n;
+			if(vp.size()>0)
+				vp.back()->left = NULL;
+			else
+				root->right = NULL;
+			for(int i=vp.size()-1; i>=0; i--)
+				re_balance(vp[i]);
+			re_balance(root);
+			return;
+		}
+		delete root;
+		root = NULL;
+	}
+	else if(t < root->t){
+		remove(root->left, t);
+		re_balance(root);
+	}
+	else{
+		remove(root->right, t);
+		re_balance(root);
+	}
+}
 
 void main()
 {
 	srand(time(NULL));
 	vector<int> a;
-	a.resize(130);
+	a.resize(30);
 	for(int i=0; i<a.size(); i++)
 		a[i] = i;
 	rand_sort(&(a[0]), sizeof(a[0]), a.size());
@@ -216,9 +274,15 @@ void main()
 	vector<bool> has_brother;
 	for(int i=0; i<a.size(); i++){
 		insert(root, a[i]);
-		//print_mid(root, has_brother);
+		print_mid(root, has_brother);
 	}
-	print_mid(root, has_brother);
+	cerr << "-----------------removing------------" << endl;
+	rand_sort(&(a[0]), sizeof(a[0]), a.size());
+	for(int i=0; i<a.size(); i++){
+		remove(root, a[i]);
+		print_mid(root, has_brother);
+	}
+	//print_mid(root, has_brother);
 	cerr << "depth:" << depth(root) << endl;
 	check_balance(root);
 }
