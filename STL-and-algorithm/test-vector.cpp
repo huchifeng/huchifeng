@@ -33,14 +33,37 @@ void main()
 	srand(time(NULL));
 	vector<int> a;
 	cout << "---------insert----------------" << endl;
-	for(int i=0; i<10; i++)
+	for(int i=0; i<5; i++)
 		a.insert(a.begin()+i/2, i);
 	for_each(a.begin(), a.end(), [](int i){ cout << i << ","; });
 	cout << endl;
+
 	cout << "---------insert----------------" << endl;
-	for(int i=0; i<10; i++)
+	for(int i=0; i<5; i++)
 		a.insert(a.end(), i+20);
 	for_each(a.begin(), a.end(), [](int i){ cout << i << ","; });
 	cout << endl;
+
+	cout << "---------remove----------------" << endl;
+	a.erase(a.begin());
+	a.erase(a.begin()+1, a.begin()+3);
+	for_each(a.begin(), a.end(), [](int i){ cout << i << ","; });
+	cout << endl;
+
+	cout << "---------rbegin--back--------------" << endl;
+	cout << *a.rbegin() << "," << a.back();
+	cout << endl;
+
+	cout << "---------rend----------------" << endl;
+	for_each(a.rbegin(), a.rend(), [](int i){ cout << i << ","; });
+	cout << endl;
+
+	cout << "---------std::copy----------------" << endl;
+	vector<int> b;
+	b.resize(a.size()); // need pre alloc
+	std::copy(a.rbegin(), a.rend(), b.begin());
+	for_each(b.begin(), b.end(), [](int i){ cout << i << ","; });
+	cout << endl;
+
 }
 
