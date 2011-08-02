@@ -33,8 +33,8 @@ includelib /masm32/lib/user32.lib
 includelib /masm32/lib/kernel32.lib
  
 .data
-szCaption   db 'title', 0
-szText      db 'Hello, World!', 0
+szCaption   db 'title!!!', 0
+szText      db 'Hello, World in Visual C++ !!!!', 0
  
 .code
 start:

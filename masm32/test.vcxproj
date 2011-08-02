@@ -14,9 +14,6 @@
       <Platform>Win32</Platform>
     </ProjectConfiguration>
   </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="test-NtQueryVolumeInformationFile.cpp" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectName>tester</ProjectName>
     <ProjectGuid>{44FE8842-2BEF-45FC-BB69-7757A45AF273}</ProjectGuid>
