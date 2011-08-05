@@ -15,7 +15,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="test-laplace.cpp" />
+    <ClCompile Include="test-conv2d-process.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectName>tester</ProjectName>
