@@ -47,7 +47,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="1-helloworld.asm.cmd" />
-    <None Include="2-helloworld.asm" />
     <None Include="2-helloworld.mak" />
     <None Include="readme.txt" />
   </ItemGroup>
