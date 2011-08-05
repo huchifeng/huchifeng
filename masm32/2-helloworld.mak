@@ -1,15 +1,16 @@
 OUTDIR=./
  
-all : VCHelloWorld.exe-1
+all : test1.exe
  
-VCHelloWorld.exe-1 : obj1
-    link /nologo /DEBUG /incremental:no /subsystem:windows /out:$(OUTDIR)/test1.exe $(OUTDIR)/VCHelloWorld.obj
+test1.exe : test.obj-2
+    link /nologo /DEBUG /incremental:no /subsystem:windows /out:$(OUTDIR)/test1.exe $(OUTDIR)/test.obj
  
-obj1 : 1-helloworld.asm.cmd
-    ml /nologo /coff /c /Fo $(OUTDIR)/VCHelloWorld.obj 1-helloworld.asm.cmd
+test1.exe-cmd : test.obj-1
+    link /nologo /DEBUG /incremental:no /subsystem:console /out:$(OUTDIR)/test1.exe $(OUTDIR)/test.obj
+ 
+test.obj-1: 2-inline-asm.cpp
+    cl /EHsc /c  2-inline-asm.cpp /Fo"$(OUTDIR)/test.obj" 
 
-VCHelloWorld.exe : obj2
-    link /nologo /DEBUG /incremental:no /subsystem:console /out:$(OUTDIR)/test1.exe $(OUTDIR)/VCHelloWorld.obj
- 
-obj2: 2-inline-asm.cpp
-    cl /EHsc /c  2-inline-asm.cpp /Fo"$(OUTDIR)/VCHelloWorld.obj" 
+test.obj-2 : basic.asm
+    ml /nologo /coff /c /Fo $(OUTDIR)/test.obj basic.asm
+

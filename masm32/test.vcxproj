@@ -15,7 +15,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\image-process\test-histogram-equalization.cpp" />
+    <ClCompile Include="2-inline-asm.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectName>tester</ProjectName>
