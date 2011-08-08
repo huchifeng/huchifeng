@@ -19,29 +19,25 @@ CONTACT: huchifeng@gmail.com
 HOMEPAGE: https://github.com/huchifeng/huchifeng
 
 */
+/*
+NtQueryVolumeInformationFile
+  volume id, changed after every formatting
+
+
+*/
 
 #include <time.h>
-#include <string>
 #include <iostream>
-#include <algorithm>
-#include <iterator> // front-inserter
 #include <vector>
-#include <deque>
-#include <map>
-#include <functional> // tr1::function
 #include <assert.h>
+#include <windows.h>
 
 using namespace std;
 
 
 void main(){
-	__asm{
-		// jmp @F // not supported
-		// @@:
-		jmp xxx;
-	xxx:
-	}
-
-	cerr << rand() << endl;
+	::SendMessage(HWND_BROADCAST,   WM_SYSCOMMAND,   SC_MONITORPOWER,   2);
 }
+
+
 
