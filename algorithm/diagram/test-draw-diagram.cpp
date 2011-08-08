@@ -1,4 +1,4 @@
-/*
+ï»¿/*
 
 Copyright (C) 2011 huchifeng@gmail.com
 
@@ -20,6 +20,10 @@ HOMEPAGE: https://github.com/huchifeng/huchifeng
 
 */
 /*
+UG: Undirected graph
+UAG: Undirected acyclic graph // tree
+DG: Digraph/digram 
+DAG: Directed acyclic graph
 
 */
 
@@ -30,6 +34,8 @@ HOMEPAGE: https://github.com/huchifeng/huchifeng
 #include <list>
 #include <assert.h>
 using namespace std;
+
+const char* dots = "â”„"; // "â”„";
 
 class diagram_t{
 public:
@@ -50,7 +56,11 @@ public:
 		return k[i * m_n + j];
 	}
 	void print();
+	void print_digraph();
 	void print_diagram();
+	int size(){
+		return m_n;
+	}
 private:
 	int m_n;
 	vector<int> k; // not to use vector<bool>
@@ -60,19 +70,29 @@ private:
 void diagram_t::print(){
 	for(int i=0; i<m_n; i++){
 		for(int j=0; j<m_n; j++){
-			cerr << (has_link(i, j) ? "+" : " ");
+			cerr << (has_link(j, i) ? "+" : " ");
+		}
+		cerr << i << ":";
+		for(int j=0; j<m_n; j++){
+			if(has_link(j, i))
+				cerr << j << ",";
+		}
+		cerr << "  :";
+		for(int j=0; j<m_n; j++){
+			if(has_link(i, j))
+				cerr << j << ",";
 		}
 		cerr << endl;
 	}
 }
 void diagram_t::print_diagram(){
 	vector<int> max_link(m_n);
-	vector<int> min_link(m_n);
+	vector<int> min_link2(m_n);
 	for(int i=0; i<m_n; i++){
-		min_link[i] = i;
+		min_link2[i] = i;
 		for(int j=i-1; j>=0; j--){
 			if(has_link(j, i)){
-				min_link[i] = j;
+				min_link2[i] = j;
 			}
 		}
 		for(int j=i+1; j<m_n; j++){
@@ -83,23 +103,34 @@ void diagram_t::print_diagram(){
 	}
 	for(int i=0; i<m_n; i++){
 		for(int j=0; j<i; j++){
+			string s = "  ";
+			if(min_link2[i]<=j)
+				s = dots; //â”€
 			if(!has_link(j, i)){
-				cerr << "  ";
-				continue;
-			}
-			if(j==min_link[i]){
-				if(max_link[j]==i){
-					cerr << "©¸";
+				if(max_link[j]>i){
+					cerr << "â”‚" << s;
 					continue;
 				}
-				cerr << "©À";
+				if(min_link2[i]<j){
+					cerr << dots << s;
+					continue;
+				}
+				cerr << "  " << s;
+				continue;
+			}
+			if(j==min_link2[i]){
+				if(max_link[j]==i){
+					cerr << "â””" << s;
+					continue;
+				}
+				cerr << "â”œ" << s;
 				continue;
 			}
 			if(max_link[j]==i){
-				cerr << "©Ø";
+				cerr << "â”´" << s;
 				continue;
 			}
-			cerr << "©à";
+			cerr << "â”¼" << s;
 		}
 		if(label[i]=="")
 			cerr << i;
@@ -108,49 +139,97 @@ void diagram_t::print_diagram(){
 		cerr << endl;
 	}
 }
-//void diagram_t::print_diagram(){
-//	vector<string> s((2*m_n-1) * m_n);
-//	vector<int> max_link(m_n);
-//	for(int i=0; i<m_n; i++){
-//		for(int j=0; j<=i; j++){
-//			s[i*(2*m_n)+j] = "©¤";
-//			if(i<m_n-1)
-//				s[i*(2*m_n)+m_n+j] = "  ";
-//		}
-//	}
-//	for(int i=0; i<m_n; i++){
-//		for(int j=i+1; j<m_n; j++){
-//			if(has_link(i, j))
-//				max_link[i] = j;
-//		}
-//		s[i*(2*m_n) + i] = (max_link[i] > i ? "©Ð" : "©¤");
-//		for(int j=i+1; j<=max_link[i]; j++){
-//			s[j*(2*m_n)+i] = (has_link(i, j) ? (j==max_link[i] ? "©Ø" : "©à"): "©¤");
-//			s[j*(2*m_n)-m_n+i] = "©¦";
-//		}
-//	}
-//	for(int i=0; i<m_n; i++){
-//		for(int j=0; j<m_n; j++){
-//			cerr << s[i*(2*m_n) + j];
-//		}
-//		cerr << i << endl;
-//		if(i == m_n-1)
-//			break;
-//		for(int j=0; j<m_n; j++){
-//			//cerr << s[i*(2*m_n)+m_n + j];
-//		}
-//		//cerr << endl;
-//	}
-//}
+void diagram_t::print_digraph(){
+	vector<int> min_link(m_n);
+	vector<int> max_link(m_n);
+	vector<int> min_link2(m_n);
+	for(int i=0; i<m_n; i++){
+		max_link[i] = i;
+		min_link[i] = i;
+		min_link2[i] = i;
+		for(int j=i-1; j>=0; j--){
+			if(has_link(j, i)){
+				min_link2[i] = j;
+			}
+		}
+		for(int j=i-1; j>=0; j--){
+			if(has_link(i, j)){
+				min_link[i] = j;
+			}
+		}
+		for(int j=i+1; j<m_n; j++){
+			if(has_link(i, j)){
+				max_link[i] = j;
+			}
+		}
+		//cerr << i << ":" << min_link[i] << "~" << max_link[i] << endl;
+	}
+	for(int i=0; i<m_n; i++){
+		for(int j=0; j<m_n; j++){
+			string s = "  ";
+			if(min_link2[i]<=j)
+				s = dots;
+			//if(has_link(j, i))
+			//	s = "â”€";
+			//else if(i>= min_link[j] && i<=max_link[j])
+			//	s = "  ";
+			if(j==m_n-1)
+				s = "";
+			if(j==i){
+				cerr << "â—‹" << s;
+				continue;
+			}
+			if(!has_link(j, i)){
+				if(max_link[j]>=i && i>=min_link[j]){
+					cerr << "â”‚" << s;
+					continue;
+				}
+				if(min_link2[i]<j){
+					//cerr << "  " << s;
+					cerr << dots << s;
+					continue;
+				}
+				cerr << "  " << s;
+				continue;
+			}
+			if(min_link[j]==i){
+				cerr << "â”¼" << s; // â”Œâ”¬
+				continue;
+			}
+			if(max_link[j]==i){
+				cerr << "â”¼" << s; // â””â”´
+				continue;
+			}
+			cerr << "â”¼" << s; // â”œ
+		}
+		if(label[i]=="")
+			cerr << i;
+		else
+			cerr << label[i];
+		cerr << endl;
+	}
+}
 
 void main()
 {
 	srand(time(NULL));
-	diagram_t d(5);
-	d(0, "Zero")(1, "First")(2, "Second")(3, "Third")(4, "Forth");
-	d(0, 1)(0, 3)(1, 2)(1,3)(1,4)(2, 4);
-	d.print();
-	d.print_diagram();
+	{
+		diagram_t d(5);
+		//d(0, "Zero")(1, "First")(2, "Second")(3, "Third")(4, "Forth");
+		d(0, 1)(0, 3)(1, 2)(1,3)(1,4)(2, 4);
+		d.print();
+		d.print_diagram();
+	}
+	{
+		diagram_t d(19);
+		for(int i=0; i<2*d.size(); i++){
+			d(rand()% d.size(), rand()% d.size());
+		}
+		d.print();
+		d.print_diagram();
+		cerr << endl;
+		d.print_digraph();
+	}
 }
 
 
