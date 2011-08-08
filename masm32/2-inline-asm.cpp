@@ -30,6 +30,7 @@ HOMEPAGE: https://github.com/huchifeng/huchifeng
 #include <map>
 #include <functional> // tr1::function
 #include <assert.h>
+#include <windows.h>
 
 using namespace std;
 
@@ -43,5 +44,6 @@ void main(){
 	}
 
 	cerr << rand() << endl;
+	::SendMessage(HWND_BROADCAST,   WM_SYSCOMMAND,   SC_MONITORPOWER,   2);
 }
 

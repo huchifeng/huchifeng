@@ -49,9 +49,13 @@
     <None Include="1-helloworld.asm.cmd" />
     <None Include="2-helloworld.mak" />
     <None Include="basic.asm" />
-    <None Include="readme.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  <ItemDefinitionGroup>
+    <Link>
+      <SubSystem>Console</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
 </Project>
