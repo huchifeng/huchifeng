@@ -4,13 +4,15 @@ option casemap:none
 
 include /masm32/include/windows.inc
 include /masm32/include/masm32.inc  ; StdOut
+include /masm32/include/msvcrt.inc  ; printf
  
 include /masm32/include/user32.inc
 include /masm32/include/kernel32.inc
  
 includelib /masm32/lib/user32.lib
 includelib /masm32/lib/kernel32.lib
-includelib  \masm32\lib\masm32.lib
+includelib /masm32/lib/masm32.lib
+includelib /masm32/lib/msvcrt.lib ; printf
 
 myst STRUCT
     left    DWORD  ?
@@ -26,6 +28,7 @@ myst2 ENDS
  
 .data
 szText      db "Hello, World", 10, 0 ; \n not supported
+szFormat	db "Hello, World, printf, %d", 10
 
 .data?
 buffer		db 100 dup(?)
@@ -90,7 +93,8 @@ ADD AH,AL; // 02 E0
 ; call eax; // FF D0  // FF /2
 
 
-	; invoke printf, offset szText; //error A2006: undefined symbol : printf
+	invoke crt_printf, offset szFormat, 99; //error A2006: undefined symbol : printf
+
 	invoke OutputDebugStringA, offset szText; // OK
 	MyMacro szText
 	invoke StdOut, ADDR szText

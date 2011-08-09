@@ -20,5 +20,7 @@ test.obj-2: 2-inline-asm.cpp
 #   cannot add block comment in makefile ?
 
 test.obj-3 : basic.asm
-    ml /nologo /coff /c /Fo $(OUTDIR)/test.obj basic.asm
-
+#    ml /nologo /coff /c /Fo $(OUTDIR)/test.obj basic.asm
+#	ml /nologo /coff /c /Fo $(OUTDIR)/test.obj call-dll-entry-static.asm
+#	ml /nologo /coff /c /Fo $(OUTDIR)/test.obj test-masm-high-level.asm
+	ml /nologo /coff /c /Fo $(OUTDIR)/test.obj test-masm-MACRO.asm

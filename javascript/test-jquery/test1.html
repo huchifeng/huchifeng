@@ -98,6 +98,12 @@ one() 执行一次之后删除
 不能 $.data($('#input11'), ...) ?
 
 
+<br/>
+必须 style='position:absolute;'
+	<input id=input11 style='position:absolute;'
+  type=button value="$(this).animate({left: '+=50px'}, 'slow');" 
+   onclick="eval(this.value)" /> 
+
 
 <script>
 
