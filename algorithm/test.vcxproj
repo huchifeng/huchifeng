@@ -96,7 +96,7 @@
     <None Include="README.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="diagram\test-draw-diagram.cpp" />
+    <ClCompile Include="diagram\test-draw-graph.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
