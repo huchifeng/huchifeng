@@ -25,6 +25,8 @@ UAG: Undirected acyclic graph // tree
 DG: Digraph/digram 
 DAG: Directed acyclic graph
 
+when graph degenerate to tree, the drawing should be a tree ?
+
 */
 
 #include <time.h>
@@ -105,7 +107,9 @@ void diagram_t::print_diagram(){
 		for(int j=0; j<i; j++){
 			string s = "  ";
 			if(min_link2[i]<=j)
-				s = dots; //─
+				s = dots; //"─"; //
+			if(has_link(j,i))
+				s = "→";//"↔"; // unicode, not gb2312
 			if(!has_link(j, i)){
 				if(max_link[j]>i){
 					cerr << "│" << s;
@@ -127,10 +131,10 @@ void diagram_t::print_diagram(){
 				continue;
 			}
 			if(max_link[j]==i){
-				cerr << "┴" << s;
+				cerr << "└" << s; // "┴"
 				continue;
 			}
-			cerr << "┼" << s;
+			cerr << "├"  << s; // "┼"
 		}
 		if(label[i]=="")
 			cerr << i;
@@ -169,14 +173,14 @@ void diagram_t::print_digraph(){
 			string s = "  ";
 			if(min_link2[i]<=j)
 				s = dots;
-			//if(has_link(j, i))
-			//	s = "─";
+			if(has_link(j, i))
+				s = "→"; //"─";
 			//else if(i>= min_link[j] && i<=max_link[j])
 			//	s = "  ";
-			if(j==m_n-1)
-				s = "";
+			//if(j==m_n-1)
+			//	s = "";
 			if(j==i){
-				cerr << "○" << s;
+				cerr << "○" << s; // ○├
 				continue;
 			}
 			if(!has_link(j, i)){
@@ -193,14 +197,14 @@ void diagram_t::print_digraph(){
 				continue;
 			}
 			if(min_link[j]==i){
-				cerr << "┼" << s; // ┌┬
+				cerr << "┌" << s; // ┌┬┼
 				continue;
 			}
 			if(max_link[j]==i){
-				cerr << "┼" << s; // └┴
+				cerr << "└" << s; // └┴┼
 				continue;
 			}
-			cerr << "┼" << s; // ├
+			cerr << "├" << s; // ├┼
 		}
 		if(label[i]=="")
 			cerr << i;
