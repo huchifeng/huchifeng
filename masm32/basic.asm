@@ -27,10 +27,12 @@ myst2 STRUCT
 myst2 ENDS
  
 .data
+align 4
 szText      db "Hello, World", 10, 0 ; \n not supported
-szFormat	db "Hello, World, printf, %d", 10, 0;  0 不可少！
+szFormat	BYTE "Hello, World, printf, %d ", 3 dup(33), 10, 0;  0 不可少！
+;   BYTE(DB) WORD(DW) DWORD=REAL4(DD) FWORD(DF,6byte) QWORD=REAL8(DQ), TBYTE=REAL10(DT)
 
-.data?
+.data?  ; uninitialised data section
 buffer		db 100 dup(?)
 
 
@@ -92,8 +94,36 @@ ADD AH,AL; // 02 E0
 ; call AX; // 66 FF D0 
 ; call eax; // FF D0  // FF /2
 
+; __stdcall调用约定：函数的参数自右向左通过栈传递，被调用的函数在返回前清理传送参数的内存栈，
+;	后面加上一个"@"符号和其参数的字节数，格式为_functionname@number
+;	例如 ：function(int a, int b)，其修饰名为：_function@8 
+;   user32.dll 中的函数都没有 _ 和 @n ？
+; _cdecl是C和C＋＋程序的缺省调用方式。每一个调用它的函数都包含清空堆栈的代码，
+;		所以产生的可执行文件大小会比调用_stdcall函数的大。
+;		函数采用从右到左的压栈方式。
+;		注意：对于可变参数的成员函数，始终使用__cdecl的转换方式。 
+;	仅在输出函数名前加上一个下划线前缀，_functionname
+; __fastcall调用约定：它是通过寄存器来传送参数的
+;		（实际上，它用ECX和EDX传送前两个双字（DWORD）或更小的参数，剩下的参数仍旧自右向左压栈传送，
+;		被调用的函数在返回前清理传送参数的内存栈）。 
+;	输出函数名前加上一个"@"符号，后面也是一个"@"符号和其参数的字节数，格式为@functionname@number。
+; thiscall仅仅应用于"C++"成员函数。this指针存放于CX寄存器，参数从右到左压。
+;		thiscall不是关键词，因此不能被程序员指定。 
+; naked call; 
+;	其他调用约定，如果必要的话，进入函数时编译器会产生代码来保存ESI，EDI，EBX，EBP寄存器，
+;		退出函数时则产生代码恢复这些寄存器的内容。
+;	naked call不产生这样的代码。
+;	naked call不是类型修饰符，故必须和_declspec共同使用。
 
-	invoke crt_printf, offset szFormat, 99; //error A2006: undefined symbol : printf
+; 对于导出的C++类，仅能使用__cdecl调用约定
+;   ??4QUrl@@QAEAAV0@ABVQString@@@Z  ; 构造函数，QAE 固定, AAV 是引用参数， ABV 常数引用， @Z 结束
+; 对于导出的C++类中的成员函数（非构造函数和析构函数），可以使用不同的调用约定
+;   方法名在前
+;  ?size@QString@@QBEHXZ
+;  ?sleep@QThread@@KAXK@Z
+
+
+	invoke crt_printf, offset szFormat, 9999; //error A2006: undefined symbol : printf
 
 	invoke OutputDebugStringA, offset szText; // OK
 	MyMacro szText

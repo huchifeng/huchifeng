@@ -26,4 +26,6 @@ test.obj-3 : *.asm
 #	ml /nologo /coff /c /Fo $(OUTDIR)/test.obj test-masm-MACRO.asm
 #	ml /nologo /coff /c /Fo $(OUTDIR)/test.obj in-memory-dialog.asm
 #	ml /nologo /coff /c /Fo $(OUTDIR)/test.obj my-lib-dialog-caller.asm
- 	ml /nologo /coff /c /Fo $(OUTDIR)/test.obj test-DateTime.asm
+# 	ml /nologo /coff /c /Fo $(OUTDIR)/test.obj test-DateTime.asm
+#   ml /nologo /coff /c /Fo $(OUTDIR)/test.obj test-FPU.asm
+	ml /nologo /coff /c /Fo $(OUTDIR)/test.obj test-vkdebug.asm
