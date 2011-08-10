@@ -28,7 +28,7 @@ myst2 ENDS
  
 .data
 szText      db "Hello, World", 10, 0 ; \n not supported
-szFormat	db "Hello, World, printf, %d", 10
+szFormat	db "Hello, World, printf, %d", 10, 0;  0 ≤ªø……Ÿ£°
 
 .data?
 buffer		db 100 dup(?)
