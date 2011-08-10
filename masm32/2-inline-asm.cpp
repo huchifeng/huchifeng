@@ -33,6 +33,11 @@ HOMEPAGE: https://github.com/huchifeng/huchifeng
 
 using namespace std;
 
+#include <Windows.h>
+#include "QtCore/QCoreApplication"
+#include "QtCore/QDebug"
+#pragma comment(lib, "QtCore4.lib")
+
 
 void main(){
 	__asm{
@@ -41,6 +46,24 @@ void main(){
 		jmp xxx;
 	xxx:
 	}
+
+	qDebug() << "hello";
+	HMODULE hLib = LoadLibrary("QtCore4.dll");
+	qDebug() << "hLib:" << hLib;
+	const char* (*zlibVersion)() = NULL;
+	*(void**)&zlibVersion = GetProcAddress(hLib, "zlibVersion");
+	qDebug() << "zLibVersion:" << zlibVersion << "():" << zlibVersion();
+
+	qDebug() << sizeof(qDebug());
+test_qDebug:
+	{
+		QDebug q1(QtDebugMsg);
+test_qDebug_1:
+		q1 << 99;
+test_qDebug_2: ;
+	}
+test_qDebug_end:
+
 
 	cerr << rand() << endl;
 }

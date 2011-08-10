@@ -38,6 +38,8 @@
     <NMakeOutput>test1.exe</NMakeOutput>
     <NMakePreprocessorDefinitions>WIN32;_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
     <NMakeBuildCommandLine>nmake 2-helloworld.mak</NMakeBuildCommandLine>
+    <IncludePath>C:\Qt\4.7.0\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Qt\4.7.0\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <NMakeOutput>test1.exe</NMakeOutput>
@@ -54,6 +56,9 @@
     <None Include="in-memory-dialog.asm" />
     <None Include="test-masm-high-level.asm" />
     <None Include="test-masm-MACRO.asm" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="2-inline-asm.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

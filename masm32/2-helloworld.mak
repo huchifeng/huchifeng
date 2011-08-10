@@ -17,15 +17,21 @@ test.obj-2: 2-inline-asm.cpp
 #	Missing "press any key to continue..." when lauching with CTRL+F5 
 #	have to manually edit test1.vcxproj; add 
 #	<ItemDefinitionGroup><Link><SubSystem>Console</SubSystem></Link></ItemDefinitionGroup>
+
 #   cannot add block comment in makefile ?
 
-test.obj-3 : *.asm
-#   ml /nologo /coff /c /Fo $(OUTDIR)/test.obj basic.asm
-#	ml /nologo /coff /c /Fo $(OUTDIR)/test.obj call-dll-entry-static.asm
+test.obj-3 : *.asm *.cpp
+#   ml /nologo /coff /c /Zi /Fo $(OUTDIR)/test.obj basic.asm
+	ml /nologo /coff /c /Fo $(OUTDIR)/test.obj call-dll-entry-static.asm
+#	ml /nologo /coff /c /Zi /Fo $(OUTDIR)/test.obj call-dll-entry-dynamic.asm
 #	ml /nologo /coff /c /Fo $(OUTDIR)/test.obj test-masm-high-level.asm
 #	ml /nologo /coff /c /Fo $(OUTDIR)/test.obj test-masm-MACRO.asm
 #	ml /nologo /coff /c /Fo $(OUTDIR)/test.obj in-memory-dialog.asm
 #	ml /nologo /coff /c /Fo $(OUTDIR)/test.obj my-lib-dialog-caller.asm
 # 	ml /nologo /coff /c /Fo $(OUTDIR)/test.obj test-DateTime.asm
 #   ml /nologo /coff /c /Fo $(OUTDIR)/test.obj test-FPU.asm
-	ml /nologo /coff /c /Fo $(OUTDIR)/test.obj test-vkdebug.asm
+#	ml /nologo /coff /c /Fo $(OUTDIR)/test.obj test-vkdebug.asm
+#	cl /EHsc /c /Zi 2-inline-asm.cpp /Fo"$(OUTDIR)/test.obj" 
+#   添加 /Zi 可以调试, cpp/asm 皆可。
+
+

@@ -122,6 +122,11 @@ ADD AH,AL; // 02 E0
 ;  ?size@QString@@QBEHXZ
 ;  ?sleep@QThread@@KAXK@Z
 
+; SYSCALL
+;	不对函数名进行修饰
+;	参数由右向左压栈(否则无法直接引用参数, 只能用 [ebp + 8}之类的操作符引用)
+;	由函数清理入栈参数
+
 
 	invoke crt_printf, offset szFormat, 9999; //error A2006: undefined symbol : printf
 

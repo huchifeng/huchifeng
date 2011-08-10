@@ -1,0 +1,8 @@
+LIBRARY QtCore4.dll
+
+EXPORTS
+	imp__qDebug_msgType @106
+	_imp__qDebug_msgType @107
+	_qDebug_msgType @108
+	qDebug_msgType @109
+
