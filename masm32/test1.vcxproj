@@ -51,6 +51,7 @@
     <None Include="basic.asm" />
     <None Include="call-dll-entry-dynamic.asm" />
     <None Include="call-dll-entry-static.asm" />
+    <None Include="in-memory-dialog.asm" />
     <None Include="test-masm-high-level.asm" />
     <None Include="test-masm-MACRO.asm" />
   </ItemGroup>

@@ -19,8 +19,10 @@ test.obj-2: 2-inline-asm.cpp
 #	<ItemDefinitionGroup><Link><SubSystem>Console</SubSystem></Link></ItemDefinitionGroup>
 #   cannot add block comment in makefile ?
 
-test.obj-3 : basic.asm
-#    ml /nologo /coff /c /Fo $(OUTDIR)/test.obj basic.asm
+test.obj-3 : my-lib-dialog-caller.asm
+#   ml /nologo /coff /c /Fo $(OUTDIR)/test.obj basic.asm
 #	ml /nologo /coff /c /Fo $(OUTDIR)/test.obj call-dll-entry-static.asm
 #	ml /nologo /coff /c /Fo $(OUTDIR)/test.obj test-masm-high-level.asm
-	ml /nologo /coff /c /Fo $(OUTDIR)/test.obj test-masm-MACRO.asm
+#	ml /nologo /coff /c /Fo $(OUTDIR)/test.obj test-masm-MACRO.asm
+#	ml /nologo /coff /c /Fo $(OUTDIR)/test.obj in-memory-dialog.asm
+	ml /nologo /coff /c /Fo $(OUTDIR)/test.obj my-lib-dialog-caller.asm
