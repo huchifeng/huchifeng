@@ -1,0 +1,30 @@
+﻿<html>
+<head>
+<title>jquery internals</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+</head>
+<style>
+
+</style>
+
+</head>
+<body >
+
+
+<script>
+
+(function(){
+  window.$ = function(x){ return new $.cls(x*x); };
+  $.f1 = function(){ return 999; };
+  $.cls = function(x){
+     this.x = x;
+  };
+  $.cls.prototype = { f: function(){ return 88+this.x; } };
+})();
+
+alert([$(9), $.f1(), $(9).x, $(9).f()]);
+
+</script>
+
+</body>
+</html>
