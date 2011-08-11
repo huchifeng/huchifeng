@@ -49,6 +49,7 @@ void main(){
 	xxx:
 	}
 
+	qDebug() << 100;
 	qDebug() << "hello";
 	HMODULE hLib = LoadLibrary("QtCore4.dll");
 	qDebug() << "hLib:" << hLib;
