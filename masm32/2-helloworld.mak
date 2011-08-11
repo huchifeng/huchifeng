@@ -24,7 +24,7 @@ test.obj-2: 2-inline-asm.cpp
 #   cannot add block comment in makefile ?
 
 test.obj-3 : *.asm *.cpp
-#   ml /nologo /coff /c $(CFLAGS) /Fo $(OUTDIR)/test.obj basic.asm
+   ml /nologo /coff /c $(CFLAGS) /Fo $(OUTDIR)/test.obj basic.asm
 #	ml /nologo /coff /c $(CFLAGS) /Fo $(OUTDIR)/test.obj call-dll-entry-static.asm
 #	ml /nologo /coff /c $(CFLAGS) /Fo $(OUTDIR)/test.obj call-dll-entry-dynamic.asm
 #	ml /nologo /coff /c /Fo $(OUTDIR)/test.obj test-masm-high-level.asm
@@ -34,5 +34,5 @@ test.obj-3 : *.asm *.cpp
 # 	ml /nologo /coff /c /Fo $(OUTDIR)/test.obj test-DateTime.asm
 #   ml /nologo /coff /c /Fo $(OUTDIR)/test.obj test-FPU.asm
 #	ml /nologo /coff /c /Fo $(OUTDIR)/test.obj test-vkdebug.asm
-	cl /EHsc /c $(CFLAGS) 2-inline-asm.cpp /Fo"$(OUTDIR)/test.obj" 
+#	cl /EHsc /c $(CFLAGS) 2-inline-asm.cpp /Fo"$(OUTDIR)/test.obj" 
 

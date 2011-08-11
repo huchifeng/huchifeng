@@ -14,6 +14,8 @@ includelib /masm32/lib/kernel32.lib
 includelib /masm32/lib/masm32.lib
 includelib /masm32/lib/msvcrt.lib ; printf
 
+include /masm32/include/masm32rt.inc
+
 myst STRUCT
     left    DWORD  ?
     top     DWORD  ?
@@ -28,9 +30,12 @@ myst2 ENDS
  
 .data
 align 4
-szText      db "Hello, World", 10, 0 ; \n not supported
+szText1      db "Hello, World", 10, 0 ; \n not supported
+; szText 导致编译错误
 szFormat	BYTE "Hello, World, printf, %d ", 3 dup(33), 10, 0;  0 不可少！
 ;   BYTE(DB) WORD(DW) DWORD=REAL4(DD) FWORD(DF,6byte) QWORD=REAL8(DQ), TBYTE=REAL10(DT)
+arrayW   dw 1000, 2000, 3000
+
 
 .data?  ; uninitialised data section
 buffer		db 100 dup(?)
@@ -128,11 +133,15 @@ ADD AH,AL; // 02 E0
 ;	由函数清理入栈参数
 
 
+   invoke crt_printf, offset szFormat, [arrayW+2]
+   invoke crt_printf, offset szFormat, [arrayW+4]
+   invoke crt_printf, offset szFormat, [arrayW+3] ; wrong alignment
+
 	invoke crt_printf, offset szFormat, 9999; //error A2006: undefined symbol : printf
 
-	invoke OutputDebugStringA, offset szText; // OK
-	MyMacro szText
-	invoke StdOut, ADDR szText
+	invoke OutputDebugStringA, offset szText1; // OK
+	MyMacro szText1
+	invoke StdOut, ADDR szText1
 
     mov [buffer+0], "1"
     mov [buffer+1], 10
@@ -181,7 +190,7 @@ ADD AH,AL; // 02 E0
       ASSUME eax:nothing
 	  ;mov (myst2 PTR [eax]).a.left, 7
 
-	  mov eax, offset szText
+	  mov eax, offset szText1
 	  add eax, myst1.a.left
 	  invoke StdOut, eax 
 	  ret
