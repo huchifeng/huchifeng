@@ -37,7 +37,9 @@ using namespace std;
 #include "QtCore/QCoreApplication"
 #include "QtCore/QDebug"
 #pragma comment(lib, "QtCore4.lib")
-
+// __imp_??0QDebug@@QAE@W4QtMsgType@@@Z
+// __imp_??6QDebug@@QAEAAV0@H@Z
+// __imp_??1QDebug@@QAE@XZ
 
 void main(){
 	__asm{

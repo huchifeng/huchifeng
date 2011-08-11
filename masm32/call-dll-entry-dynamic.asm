@@ -52,7 +52,7 @@ start:
 	lea ecx, [qDebug]
 	call p_QDebug_MsgType
 
-	push 63h
+	push 9999
 	lea ecx, [qDebug]
 	call p_QDebug_out_int
 
