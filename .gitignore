@@ -17,6 +17,7 @@ _UpgradeReport_Files
 *.log
 *.lastbuildstate
 *.opensdf
+*.*~
 Bak/
 Res/
 /charset-conversion/65536-fanti.txt

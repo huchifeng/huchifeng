@@ -63,8 +63,6 @@
  (with-open-file (out filename :direction :output :if-exists :supersede)
      (print *db* out)))
 
-;(with-standard-io-syntax (print "hello" t))
-; with-standard-io-syntax 未定义？
 
 ; print 的输出可以读回
 

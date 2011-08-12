@@ -1,0 +1,132 @@
+; (Lisp was invented by John McCarthy).
+
+； 语法糖，一般的表达式(quote x)可以省略为'x。
+
+； S-表达式原本被用于将被M-表达式处理的数据，但Lisp的首个实现是一个S-表达式的解释器
+；  以S-表达式编码M-表达式，而Lisp程序员很快习惯于对代码和数据都使用S-表达式。
+
+；( 1 . (2 . (3 . nil)))  亦可写作更易理解的(1 2 3)
+
+Common Lisp范例：
+(defun factorial (x)
+   (if (zerop x) 1
+       (* x (factorial (- x 1)))))
+
+Scheme范例：
+(define (factorial x)
+    (if (zero? x) 1
+        (* x (factorial (- x 1)))))
+
+scheme 里 nil () #f 三者不同
+
+SEXP---(S-expressions) ； 提交但未能成为RFC
+    http://people.csail.mit.edu/rivest/sexp.html
+an S-expression is either:
+	-- an octet-string, or
+	-- a finite list of simpler S-expressions.
+different but equivalent ways of representing an octet-string
+	abc		-- as a token; 
+			   非数字开头，[a-zA-Z0-9-./_:*+=]+
+			   URL也是token
+	"abc"		-- as a quoted string
+			   with "C" escape conventions
+	#616263#	-- as a hexadecimal string
+			   允许空白换行，例如 #616 263#
+			   可以 3#616263#
+	3:abc		-- as a length-prefixed "verbatim" encoding
+                          No "escape sequences" are interpreted.
+			  raw, binary
+	{MzphYmM=}	-- as a base-64 encoding of the verbatim encoding
+			   (that is, an encoding of "3:abc")
+			   也可对列表(1:a2:b3:c)整体编码，不是简单oct string
+	|YWJj|		-- as a base-64 encoding of the octet-string "abc"
+			   可以长度开头 3|YWJj| 可以加空白换行
+			   A-Za-z0-9+/=
+列表例如 (abc (de #6667#) "ghi jkl")
+  (11:certificate(6:issuer3:bob)(7:subject5:alice))
+  (4:icon[12:image/bitmap]9:xxxxxxxxx) 加了type hint
+允许字符：
+	Alphabetic:	A B ... Z a b ... z
+	numeric:	0 1 ... 9
+	whitespace:	space, horizontal tab, vertical tab, form-feed
+			carriage-return, line-feed
+	The following graphics characters, which we call "pseudo-alphabetic":
+			- hyphen or minus
+			. period
+			/ slash
+			_ underscore
+			: colon
+			* asterisk
+			+ plus
+			= equal
+	The following graphics characters, which are "reserved punctuation":
+			( left parenthesis
+			) right parenthesis
+			[ left bracket
+			] right bracket
+			{ left brace
+			} right brace
+			| vertical bar
+			# number sign
+			" double quote
+			& ampersand
+			\ backslash
+	The following characters are unused and unavailable, except in
+	"verbatim" encodings:
+			! exclamation point
+			% percent
+			^ circumflex
+			~ tilde
+			; semicolon
+			' apostrophe
+			, comma
+			< less than
+			> greater than
+			? question mark
+quoted:
+	\b		-- backspace
+	\t		-- horizontal tab
+	\v 		-- vertical tab
+	\n		-- new-line
+	\f		-- form-feed
+	\r		-- carriage-return
+	\"		-- double-quote
+	\'		-- single-quote
+	\\		-- back-slash
+	\ooo		-- character with octal value ooo (all three digits
+			   must be present)
+	\xhh		-- character with hexadecimal value hh (both digits
+			   must be present)
+	\<carriage-return> -- causes carriage-return to be ignored.
+	\<line-feed>       -- causes linefeed to be ignored
+	\<carriage-return><line-feed> -- causes CRLF to be ignored.
+	\<line-feed><carriage-return> -- causes LFCR to be ignored.
+some examples of display-hints:
+	[image/gif]
+	[URI]
+	[charset=unicode-1-1]
+	[text/richtext]
+	[application/postscript]
+	[audio/basic]
+	["http://abc.com/display-types/funky.html"]
+The mime type
+    	 "text/plain; charset=iso-8859-1" 
+	 is the standard default.
+
+The "canonical" form of an S-expression represents each octet-string
+in verbatim mode, and represents each list with no blanks separating
+elements from each other or from the surrounding parentheses.
+ 目标是容易解析， 无空白，
+
+For canonical and basic transport:
+
+<sexpr>    	:: <string> | <list>
+<string>   	:: <display>? <simple-string> ;
+<simple-string>	:: <raw> ;
+<display>  	:: "[" <simple-string> "]" ;
+<raw>      	:: <decimal> ":" <bytes> ;
+<decimal>  	:: <decimal-digit>+ ;
+		-- decimal numbers should have no unnecessary leading zeros
+<bytes> 	-- any string of bytes, of the indicated length
+<list>     	:: "(" <sexp>* ")" ;
+<decimal-digit> :: "0" | ... | "9" ;
