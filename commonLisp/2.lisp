@@ -44,7 +44,7 @@
   (force-output *query-io*)
   (read-line *query-io*))
 
-(prompt-read "input a cd")
+(format *query-io* "you input: ~a" (prompt-read "input a cd"))
 
 (or (parse-integer "123abc" :junk-allowed t) 0)
 (or (parse-integer "abc" :junk-allowed t) 0)

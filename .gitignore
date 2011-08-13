@@ -17,6 +17,7 @@ _UpgradeReport_Files
 *.log
 *.lastbuildstate
 *.opensdf
+*.wx32fsl
 *.*~
 Bak/
 Res/
