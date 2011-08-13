@@ -1,12 +1,23 @@
 * C# create PDF
 
-* virtual PDF printer
+* use virtual PDF printer
 
-* C++ create PDF
+* use C++ create PDF library
 
 * QT QWebView； print HTML content to PDF
 
 * write ps file directly, use command line tool to convert to PDF
+  需要学习 ps 编程语言。
+
+* 用超文本格式，或者图片格式，然后转换为 PDF
+  有 PHP 的 html2pdf 库。
+
+* 如果直接用图片转换，可能因为分辨率问题，维数太大，性能可能有问题。
+    使用命令行程序，即使是 GPL 的也可以用，因为不连接，独立进程。
+
+* png2pdf, 命令行程序。windows 版可用编译好的 dklibs->dktools;
+    BSD license; 有库
+
 
 * 直接按PDF文件格式写，应该也可行。可以纯文本，也可以二进制。
   只需要支持贴多个图片即可实现目标，不必支持文本字体、表格等较复杂特性。
@@ -37,7 +48,8 @@ sharpPDF.dll
 
 PDFsharp
 
-GNUpdf
+GNUpdf: GPL 而不是 LGPL
 
-
+PDFLib； 包括 C,C++,Java,Perl,PHP,Python,Tcl,Ruby, COM, .NET
+  对个人免费，商业使用需要购买许可。
 
