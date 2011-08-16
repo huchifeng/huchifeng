@@ -1,0 +1,58 @@
+﻿<html>
+	<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<link type="text/css" href="css/smoothness/jquery-ui-1.8.15.custom.css" rel="stylesheet" />	
+	<script src="jquery-1.6.2.min.js"></script>
+	<script type="text/javascript" src="jquery-ui-1.8.15.custom.min.js"></script>
+</head>
+<style>
+
+    @media print{ TEXTAREA{ display:none; }}
+    html { overflow: hidden; }
+    *{ font-family: simsung; }
+
+
+</style>
+<body style="background-color:white; margin:0px; ">
+<div id=top_div style="height:39px;" >
+
+<input type="button" id=btn-pass value="                                     " 
+  style="position:absolute; border:0px; left:300px; top:0px;  height:39px; 
+    background:url(myimage/btn-pass-1.png) no-repeat;" 
+  onclick="do_pass()"
+  class="btn4state"
+  />
+</div>
+hello, world;
+
+<script>
+
+$(document).ready(function(){
+    $('.btn4state').mouseover(function(){
+        $(this).css('background', 'url(myimage/'+$(this).attr('id')+'-2.png) no-repeat');
+    });
+    $('.btn4state').mouseout(function(){
+        $(this).css('background', 'url(myimage/'+$(this).attr('id')+'-1.png) no-repeat');
+    });
+    $('.btn4state').mousedown(function(){
+        $(this).css('background', 'url(myimage/'+$(this).attr('id')+'-3.png) no-repeat');
+    });
+    $('.btn4state').click(function(){$(this).button({disabled:true});});
+    do_resize();
+});
+
+
+// ----------------- functions ---------------------- //
+
+function do_pass(){
+    //alert("pass");
+}
+function do_resize(){
+    window.onresize = do_resize;
+};
+
+
+</script>
+
+</body>
+</html>
