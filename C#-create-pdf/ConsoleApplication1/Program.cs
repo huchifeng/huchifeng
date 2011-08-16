@@ -31,6 +31,8 @@ namespace ConsoleApplication1
             //Create the font called Times Roman
 
             TimesRoman.CreateFontDict("T1", "Times-Roman");
+            //TimesRoman.CreateFontDict("T1", "simhei");
+            // if modified, adobe reader report error, said font simhei has wrong bbox
 
             //Create the font called Times Italic
 
@@ -44,10 +46,6 @@ namespace ConsoleApplication1
 
             Utility pdfUtility = new Utility();
 
-            FileStream file = new FileStream(@"text.pdf", FileMode.Create);
-            int size = 0;
-            file.Write(pdfUtility.GetHeader("1.5", out size), 0, size);
-            file.Close();
 
             //---------
 
@@ -82,8 +80,8 @@ namespace ConsoleApplication1
 
             //Specify the color for the cell and the line
 
-            ColorSpec cellColor = new ColorSpec(100, 100, 100);
-            ColorSpec lineColor = new ColorSpec(98, 200, 200);
+            ColorSpec cellColor = new ColorSpec(000, 000, 200);
+            ColorSpec lineColor = new ColorSpec(0, 200, 000);
 
             //Fill in the parameters for the table
 
@@ -96,7 +94,7 @@ namespace ConsoleApplication1
 
             textAndtable.SetParams(table, cellColor, Align.CenterAlign, 3);
             textAndtable.AddRow(false, 10, "T1", align, "First Column", "Second Column");
-            textAndtable.AddRow(false, 10, "T1", align, "Second Row", "Second Row");
+            textAndtable.AddRow(false, 10, "T2", align, "Second Row", "Second Row");
 
             //Repeat till we require the number of rows.
 
@@ -104,14 +102,12 @@ namespace ConsoleApplication1
 
             content.SetStream(textAndtable.EndTable(lineColor));
             content.SetStream(textAndtable.EndText());
-            size = 0;
-            file = new FileStream(@"text.pdf", FileMode.Append);
+
+            FileStream file = new FileStream(@"text.pdf", FileMode.Create);
+            int size = 0;
+            file.Write(pdfUtility.GetHeader("1.5", out size), 0, size);
             file.Write(page.GetPageDict(file.Length, out size), 0, size);
             file.Write(content.GetContentDict(file.Length, out size), 0, size);
-            file.Close();
-
-
-            file = new FileStream(@"text.pdf", FileMode.Append);
             file.Write(catalogDict.GetCatalogDict(pageTreeDict.objectNum,
                                               file.Length, out size), 0, size);
             file.Write(pageTreeDict.GetPageTree(file.Length, out size), 0, size);

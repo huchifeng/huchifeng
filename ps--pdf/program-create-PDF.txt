@@ -1,3 +1,6 @@
+http://en.wikipedia.org/wiki/List_of_PDF_software
+
+
 * C# create PDF
 
 * use virtual PDF printer
@@ -6,7 +9,8 @@
 
 * QT QWebView； print HTML content to PDF
 
-* write ps file directly, use command line tool to convert to PDF
+* 直接写纯文本的ps文件，然后用命令行转成PDF，
+  gpl的单独exe可以用，应该没有license问题。
   需要学习 ps 编程语言。
 
 * 用超文本格式，或者图片格式，然后转换为 PDF

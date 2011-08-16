@@ -96,3 +96,9 @@ r ; 仍然可用
 
 (defun f(a b &rest the-rest) (list a b the-rest)); 收集剩余参数为列表
 (f 1 2 3 4 5 )  ; 得到 (1 2 (3 4 5))
+
+(defun xxx()
+"document string ?"
+1
+)
+(xxx )
