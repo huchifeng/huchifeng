@@ -1,0 +1,105 @@
+﻿<html>
+<head>
+<title>CSS shape</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+</head>
+<style>
+style[contenteditable] {
+-webkit-user-modify: read-write;
+word-wrap: break-word;
+-webkit-nbsp-mode: space;
+-webkit-line-break: after-white-space;
+}
+element.style {
+}
+style {
+display: block;
+white-space: pre;
+background: #333;
+color: white;
+font: 12px Monaco;
+padding: 0 15px;
+}
+</style>
+
+</head>
+<body >
+
+<pre>
+<a onmouseover="this.href=this.innerHTML">http://css-tricks.com/examples/ShapesOfCSS/?=derp</a>
+
+style 元素本身也被显示。可以即时编辑查看效果。
+
+circle1
+<div id=circle>
+circle2
+</div>
+circle3
+<style contenteditable> 
+#circle {
+	width: 100px;
+	height: 100px;
+	background: red;
+	-moz-border-radius: 50px;
+	-webkit-border-radius: 50px;
+	border-radius: 50px;
+}
+</style> 
+
+<div id=oval>
+oval
+</div>
+<style contenteditable> 
+#oval {
+	width: 200px;
+	height: 100px;
+	background: red;
+	-moz-border-radius: 100px / 50px;
+	-webkit-border-radius: 100px / 50px;
+	border-radius: 100px / 50px;
+}
+</style> 
+
+使用 :after 在元素内容之后插入内容
+例如声音h1:after
+  {
+  content:url(beep.wav);
+  }
+<div id="star-six"></div> 
+<style contenteditable> 
+#star-six {
+	width: 0;
+	height: 0;
+	border-left: 50px solid transparent;
+	border-right: 50px solid transparent;
+	border-bottom: 100px solid red;
+	position: relative;
+}
+#star-six:after {
+	width: 0;
+	height: 0;
+	border-left: 50px solid transparent;
+	border-right: 50px solid transparent;
+	border-top: 100px solid red;
+	position: absolute;
+	content: "";
+	top: 30px;
+	left: -50px;
+}
+</style> 
+			
+用到 transform	
+<div id="parallelogram"></div> 
+<style contenteditable> 
+#parallelogram {
+	width: 150px;
+	height: 100px;
+	-webkit-transform: skew(120deg);
+	   -moz-transform: skew(20deg);
+	     -o-transform: skew(20deg);
+	background: red;
+}
+</style> 
+
+</body>
+</html>
