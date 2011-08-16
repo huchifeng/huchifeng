@@ -22,7 +22,6 @@ _UpgradeReport_Files
 *.trx
 *.vsmdi
 *.testsettings
-*.resx
 *.settings
 Bak/
 Res/
