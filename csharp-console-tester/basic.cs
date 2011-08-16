@@ -3,6 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+/*
+
+ * Common Interme-diate Language (CIL)
+ * 
+ * 
+ */
 namespace csharp_console_tester
 {
     class A
@@ -19,6 +25,29 @@ namespace csharp_console_tester
     {
         static void Main(string[] args)
         {
+            test1();
+            test2();
+            test3();
+            test4();
+            test5();
+        }
+
+        private static void test5()
+        {
+
+            const string MSG = "CONST";
+            Console.WriteLine(MSG+","+MSG.GetHashCode());
+            Console.WriteLine("IsValueType:"+MSG.GetType().IsValueType); // false
+            // value type: numbers, copy
+            // ref type:
+            //Console.WriteLine("bool.IsValueType:" + bool.IsValueType); // bool”并不包含“IsValueType”的定义
+            //Console.WriteLine("Boolean.IsValueType:" + Boolean.IsValueType); // bool”并不包含“IsValueType”的定义
+            Console.WriteLine("bool.IsValueType:" + (true).GetType().IsValueType); // True
+            Console.WriteLine(2.GetHashCode()); // "2"
+        }
+
+        private static void test1()
+        {
             Console.WriteLine("hello, world"); // System.Console
             A a = new A();
             Console.WriteLine(a.i + "," + a.j);
@@ -33,7 +62,7 @@ namespace csharp_console_tester
             Console.WriteLine((uint)(0xffffffff + 0 * a.i)); // 4294967295
             Console.WriteLine((long)(0xffffffffffffffff + (ulong)0 * (ulong)a.i)); // -1
             Console.WriteLine((ulong)(0xffffffffffffffff + (ulong)0 * (ulong)a.i)); // 18446744073709551615
-            Console.WriteLine(Int64.MinValue + "," + Int64.MaxValue + "," + ulong.MaxValue);
+            Console.WriteLine(Int64.MinValue + "," + Int64.MaxValue + "," + long.MaxValue+","+ulong.MaxValue);
 
             Console.WriteLine((float)0xffffffff); //4.294967E+09
             Console.WriteLine((double)0xffffffff); // 4294967295
@@ -43,29 +72,34 @@ namespace csharp_console_tester
 
             Console.WriteLine(sizeof(long)); // 8
             Console.WriteLine(sizeof(decimal)); // 16
+        }
 
-            {
-                string s = "hello";
-                string t = s;
-                string u = string.Copy(s);
-                Console.WriteLine(s + (s == t) + (s == u) + ((object)s == (object)t) + ((object)s == (object)u));
-            }
-            {
-                string s = null;
-                Console.WriteLine(s is object); // False
-                s = "hello";
-                Console.WriteLine(s is object); // True
-                //Console.WriteLine((int)100 is object); // 警告 CS0183: 给定表达式始终为所提供的(“object”)类型
-                //Console.WriteLine(null is object); //  警告 CS0184: 给定表达式始终不是所提供的(“object”)类型
-            }
-            {
-                int[,] a2 = new int[,] { { 1, 2, 3 }, { 4, 5, 6 } };
-                int [,] a22 = {{1,2,3,4}, {5,6,7,8}}; // 简写形式
-                Console.WriteLine(a2); // System.Int32[,]
-                int[][] a3 = new int[][] { new int[]{1}, new int[]{1,2,3}};
-                int[][] a4 = new int[2][] { new int[] { 1 }, new int[] { 1, 2, 3 } };
-                Console.WriteLine(a3); // System.Int32[][]
-            }
+        private static void test4()
+        {
+            int[,] a2 = new int[,] { { 1, 2, 3 }, { 4, 5, 6 } };
+            int[,] a22 = { { 1, 2, 3, 4 }, { 5, 6, 7, 8 } }; // 简写形式
+            Console.WriteLine(a2); // System.Int32[,]
+            int[][] a3 = new int[][] { new int[] { 1 }, new int[] { 1, 2, 3 } };
+            int[][] a4 = new int[2][] { new int[] { 1 }, new int[] { 1, 2, 3 } };
+            Console.WriteLine(a3); // System.Int32[][]
+        }
+
+        private static void test3()
+        {
+            string s = null;
+            Console.WriteLine(s is object); // False
+            s = "hello";
+            Console.WriteLine(s is object); // True
+            //Console.WriteLine((int)100 is object); // 警告 CS0183: 给定表达式始终为所提供的(“object”)类型
+            //Console.WriteLine(null is object); //  警告 CS0184: 给定表达式始终不是所提供的(“object”)类型
+        }
+
+        private static void test2()
+        {
+            string s = "hello";
+            string t = s;
+            string u = string.Copy(s);
+            Console.WriteLine(s + (s == t) + (s == u) + ((object)s == (object)t) + ((object)s == (object)u));
         }
     }
 }
