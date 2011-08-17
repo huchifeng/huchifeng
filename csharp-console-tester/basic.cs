@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Globalization; // NumberStyles
+using System.Threading;
 
 /*
 
@@ -11,6 +13,20 @@ using System.Text;
  */
 namespace csharp_console_tester
 {
+    public delegate void ProcessValue(int value);
+    // delegate Func<....., TResult> // TResult cannot void
+
+    public static class Extensions
+    {//扩展方法必须在顶级静态类中定义；Extensions 是嵌套类
+        public static void MyIterate(this IList<int> collection, ProcessValue cb
+            )
+        {
+            foreach (int element in collection)
+            {
+                cb(element);
+            }
+        }
+    }
     class A
     {
         public int i = 100;
@@ -21,8 +37,23 @@ namespace csharp_console_tester
             R, G, B
         }
     }
+
+    struct MyValueType
+    {
+        public int a; //=100; 结构中不能有实例字段初始值
+
+    }
+    class MyReferenceType
+    {
+        public int a = 200;
+        ~MyReferenceType()
+        {   // 只有类类型才能包含析构函数
+            Console.WriteLine("~MyReferenceType");
+        }
+    }
     class Program
     {
+
         static void Main(string[] args)
         {
             test1();
@@ -30,20 +61,151 @@ namespace csharp_console_tester
             test3();
             test4();
             test5();
+            test6();
+            test7();
+
+            
+            TestDelegate.go();
+            test8_anonynmous_delegate();
+
+            test_destroy();
+
+            test_stream();
+
+            string path = @"C:\_my2011\huchifeng\csharp-console-tester\ClassLibrary1\bin\Debug\ClassLibrary1.dll";
+            //System.Reflection.Assembly asm = System.Reflection.Assembly.Load(path); // 需要强名称 public token?
+            System.Reflection.Assembly asm = System.Reflection.Assembly.LoadFile(path);
+            Console.WriteLine("load assembly:" + path + "," + asm);
+            object obj = asm.CreateInstance("ClassLibrary1.Class1");
+            Console.WriteLine("obj:" + obj);
+
+            Console.WriteLine("all done");
+        }
+
+        private static void test_stream()
+        {
+            System.IO.Stream writer = Console.OpenStandardOutput();
+            byte[] bytes = System.Text.Encoding.Default.GetBytes("System.IO.Stream 中文\n"); //.UTF8
+            writer.Write(bytes, 0, bytes.Length);
+            // TextWriter Console.Out
+        }
+
+        private static void test_destroy()
+        {
+
+            MyValueType v1 = new MyValueType();
+            for (int i = 0; i < 2; i++)
+            {
+                MyReferenceType r1 = new MyReferenceType(); // 析构在函数调用返回之后，垃圾回收。与C++不同
+                Console.WriteLine(i);
+                goto DONE;
+            }
+        DONE: return;
+        }
+
+        class TestDelegate
+        {
+            static int _maxValue;
+            static void ProcessMaximumValue(int value)
+            {
+                if (value > _maxValue)
+                {
+                    _maxValue = value;
+                }
+            }
+            public static void go()
+            {
+                List<int> lst = new List<int> { 1, 2, 3, 4, 5, 6 };
+                _maxValue = int.MinValue;
+                lst.MyIterate(new ProcessValue(ProcessMaximumValue));
+                Console.WriteLine("Maximum value is (" + _maxValue + ")");
+            }
+        }
+        private static void test8_anonynmous_delegate()
+        {
+            List<int> lst = new List<int> { 1, 2, 3, 4 };
+            int runningTotal = 0;
+            lst.ForEach( // Iterate ?
+            delegate(int value)
+            {
+                runningTotal += value;
+            });
+            Console.WriteLine("Running total is (" + runningTotal + ")");
+
+            runningTotal = 1;
+            lst.MyIterate(
+                new ProcessValue( // can be omitted
+                    delegate(int value)
+                    {
+                        runningTotal *= value;
+                    }
+                )
+            );
+            lst.MyIterate(
+                (value) =>
+                {
+                    runningTotal *= value;
+                }
+            );
+            Console.WriteLine("Running total is (" + runningTotal + ")");
+        }
+
+        private static void test7()
+        {
+            try
+            {
+                string s = null;
+                s.Trim();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+            finally
+            {
+                Console.WriteLine("finally ............");
+            }
+            try
+            {
+                throw new NotSupportedException("There is no code");
+            }
+            catch (NotSupportedException e)
+            {
+                Console.WriteLine(e);
+            }
+        }
+
+        private static void test6()
+        {
+            int value;
+            if (int.TryParse("1", out value))
+            {
+                Console.WriteLine("parse ok:" + value);
+            }
+            if (!int.TryParse("1a", out value))
+            {
+                Console.WriteLine("parse fail:" + value); // reset to 0
+            }
+            value = int.Parse("100", NumberStyles.HexNumber);
+            Console.WriteLine("parse ok:" + value);
+            CultureInfo info = Thread.CurrentThread.CurrentCulture;
+            Console.WriteLine("Culture (" + info.EnglishName + ")"); // Culture (Chinese (Simplified, PRC))
         }
 
         private static void test5()
         {
 
-            const string MSG = "CONST";
-            Console.WriteLine(MSG+","+MSG.GetHashCode());
-            Console.WriteLine("IsValueType:"+MSG.GetType().IsValueType); // false
+            const string MSG = "   -CONST- ";
+            Console.WriteLine(MSG.Trim());
+            Console.WriteLine(MSG + "," + MSG.GetHashCode());
+            Console.WriteLine("IsValueType:" + MSG.GetType().IsValueType); // false
             // value type: numbers, copy
             // ref type:
             //Console.WriteLine("bool.IsValueType:" + bool.IsValueType); // bool”并不包含“IsValueType”的定义
             //Console.WriteLine("Boolean.IsValueType:" + Boolean.IsValueType); // bool”并不包含“IsValueType”的定义
             Console.WriteLine("bool.IsValueType:" + (true).GetType().IsValueType); // True
             Console.WriteLine(2.GetHashCode()); // "2"
+
         }
 
         private static void test1()
@@ -62,7 +224,7 @@ namespace csharp_console_tester
             Console.WriteLine((uint)(0xffffffff + 0 * a.i)); // 4294967295
             Console.WriteLine((long)(0xffffffffffffffff + (ulong)0 * (ulong)a.i)); // -1
             Console.WriteLine((ulong)(0xffffffffffffffff + (ulong)0 * (ulong)a.i)); // 18446744073709551615
-            Console.WriteLine(Int64.MinValue + "," + Int64.MaxValue + "," + long.MaxValue+","+ulong.MaxValue);
+            Console.WriteLine(Int64.MinValue + "," + Int64.MaxValue + "," + long.MaxValue + "," + ulong.MaxValue);
 
             Console.WriteLine((float)0xffffffff); //4.294967E+09
             Console.WriteLine((double)0xffffffff); // 4294967295
