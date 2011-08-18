@@ -51,6 +51,26 @@ namespace csharp_console_tester
             Console.WriteLine("~MyReferenceType");
         }
     }
+    partial class MyPartial
+    {
+        partial void f();
+        public void g()
+        {
+            f();
+            f();
+        }
+    }
+    class ClassWithProperty
+    {
+        public string a { get; set; }
+        public string Name
+        {
+            get
+            {
+                return "ok";
+            }
+        }
+    }
     class Program
     {
 
@@ -72,14 +92,85 @@ namespace csharp_console_tester
 
             test_stream();
 
+            test_load_assembly();
+            test_thread();
+
+            test_nullable();
+
+            (new MyPartial()).g();
+
+            ClassWithProperty cp = new ClassWithProperty();
+            cp.a = "999";
+            Console.WriteLine(cp.a+":"+cp.Name);
+
+            Console.WriteLine("all done");
+        }
+
+        private static void test_nullable()
+        {
+            MyValueType? v = null; // make nullable
+            System.Nullable<MyValueType> v2 = new MyValueType();
+            Console.WriteLine("nullable:" + v);
+            Console.WriteLine("nullable:" + v2.Value.a);
+        }
+
+        class ThreadedTask
+        {
+            public void MethodToRun()
+            {
+                Console.WriteLine("from a class");
+            }
+        }
+        private static void test_thread()
+        {
+            List<int> elements = new List<int>();
+            elements.Add(10);
+            elements.Add(20);
+
+            Thread thread1 = new Thread(
+            delegate()
+            {
+                lock (elements) // 如果不lock输出会交错
+                {
+                    foreach (int item in elements)
+                    {
+                        Console.WriteLine("Thread1: Item (" + item + ")");
+                        Thread.Sleep(100);
+                    }
+                } 
+                while (true)
+                    Console.WriteLine("hello there, Thread1");
+            }
+            );
+            Thread thread2 = new Thread(
+            () =>
+            {
+                lock (elements)
+                {
+                    foreach (int item in elements)
+                    {
+                        Console.WriteLine("Thread2: Item (" + item + ")");
+                        Thread.Sleep(100);
+                    }
+                }
+                Console.WriteLine("Well then goodbye, Thread2");
+            });
+            thread2.Start();
+            thread1.Start();
+            new Thread(new ThreadStart(new ThreadedTask().MethodToRun)).Start();
+            if(!thread1.Join(500))
+                thread1.Abort(); // 
+            thread2.Join();
+        }
+
+        private static void test_load_assembly()
+        {
             string path = @"C:\_my2011\huchifeng\csharp-console-tester\ClassLibrary1\bin\Debug\ClassLibrary1.dll";
             //System.Reflection.Assembly asm = System.Reflection.Assembly.Load(path); // 需要强名称 public token?
             System.Reflection.Assembly asm = System.Reflection.Assembly.LoadFile(path);
             Console.WriteLine("load assembly:" + path + "," + asm);
             object obj = asm.CreateInstance("ClassLibrary1.Class1");
             Console.WriteLine("obj:" + obj);
-
-            Console.WriteLine("all done");
         }
 
         private static void test_stream()

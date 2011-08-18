@@ -32,6 +32,9 @@ namespace WindowsFormsApplication1
         private void button3_Click(object sender, EventArgs e)
         {
             // 微软不太建议动态写入app.config
+
+            // app.config 自动复制为 *.exe.config
+
             // 添加引用 System.configuration
             string s = "AppSettings:";
             foreach (string key in ConfigurationManager.AppSettings)
