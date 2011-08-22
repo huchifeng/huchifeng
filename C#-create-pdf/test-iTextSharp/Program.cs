@@ -8,16 +8,24 @@ using iTextSharp.text;
 using iTextSharp.text.pdf;
 using System.IO;
 
-/*
-  Don't forget to set the correct Content-Type before you send the PDF stream if you're running a web application:
-Response.ContentType = "application/pdf";
-// [optional]
-Response.AddHeader(
-  "Content-Disposition",
-  "attachment; filename=itext.pdf"
-);
-  
- */
+//  Don't forget to set the correct Content-Type before you send the PDF stream if you're running a web application:
+//Response.ContentType = "application/pdf";
+//// [optional]
+//Response.AddHeader(
+//  "Content-Disposition",
+//  "attachment; filename=itext.pdf"
+//);
+
+//Just repeat 
+//cb.beginText(); 
+//cb.setFontAndSize(bf, size); 
+//... 
+//cb.endText(); 
+//for every page. 否则可能其他内容换页，文本不换页
+
+// FontFactory.GetFont("Arial", 10, Font.BOLD);
+// ColumnText.ShowTextAligned(cb, PdfContentByte.ALIGN_LEFT,  new Phrase(dateString, fontForDate), 100, 100, 0);
+// 用 contentByte.ShowTextAligned 无法指定bold等
 
 namespace test_iTextSharp
 {
@@ -103,6 +111,8 @@ namespace test_iTextSharp
                     cb.ShowTextAligned(PdfContentByte.ALIGN_CENTER, "This text is centered", 50, 70, 0); 
                     cb.EndText();
 
+                    
+
                     ColumnText ct = new ColumnText(cb);
                     ct.SetSimpleColumn(60, 30, 100, 150, 15, Element.ALIGN_CENTER);
                     ct.AddText(new Phrase("phrase1"));
@@ -113,8 +123,18 @@ namespace test_iTextSharp
                     doc.Add(new Paragraph("Simple Image"));
 
                     //Jpeg jpg = new Jpeg(new System.Uri(""));
-                    Image jpg = Image.GetInstance(System.Environment.CurrentDirectory+"/../../xp1.bmp");
-                    doc.Add(jpg);
+                    //Image img = Image.GetInstance("..\\..\\xp1.bmp"); // fail
+                    //Image img = Image.GetInstance(System.Environment.CurrentDirectory+"/../../xp1.bmp");
+                    Image img = Image.GetInstance(new FileStream("..\\..\\xp1.bmp", FileMode.Open)); // ok
+                    doc.Add(img);
+
+                    //cb.SaveState();
+                    cb.BeginText();
+                    img.SetAbsolutePosition(30, 180);
+                    img.ScaleAbsolute(200, 180);
+                    cb.AddImage(img);
+                    cb.EndText();
+                    //cb.RestoreState();
 
                     Paragraph p = new Paragraph("US Presidents Born in xxx");
                     p.Alignment = 1;
@@ -123,6 +143,8 @@ namespace test_iTextSharp
 
                     // table data, see code snippet following this one
                     doc.Add(_stateTable());
+
+                    doc.NewPage(); // 换页
 
                     Chunk chunk2 = new Chunk("This font is of type ITALIC | STRIKETHRU",
                         FontFactory.GetFont(FontFactory.HELVETICA, 12, Font.ITALIC | Font.STRIKETHRU));
@@ -198,7 +220,6 @@ namespace test_iTextSharp
                     String text = "这是黑体字测试！";
                     doc.Add(new Paragraph(text, font));
 
-                     
                     
                 }
                 Console.WriteLine("--end--, PDF has been created");

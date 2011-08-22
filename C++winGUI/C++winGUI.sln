@@ -1,8 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "C++winGUI", "C++winGUI\C++winGUI.vcxproj", "{787EEB26-7C64-4C9C-BB7C-95A932B64DF9}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MFC-ribbon", "MFC-ribbon\MFC-ribbon.vcxproj", "{DB2F77D8-DDDF-4942-A77F-BBED8A5E3E0B}"
 EndProject
 Global
@@ -11,10 +9,6 @@ Global
 		Release|Win32 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{787EEB26-7C64-4C9C-BB7C-95A932B64DF9}.Debug|Win32.ActiveCfg = Debug|Win32
-		{787EEB26-7C64-4C9C-BB7C-95A932B64DF9}.Debug|Win32.Build.0 = Debug|Win32
-		{787EEB26-7C64-4C9C-BB7C-95A932B64DF9}.Release|Win32.ActiveCfg = Release|Win32
-		{787EEB26-7C64-4C9C-BB7C-95A932B64DF9}.Release|Win32.Build.0 = Release|Win32
 		{DB2F77D8-DDDF-4942-A77F-BBED8A5E3E0B}.Debug|Win32.ActiveCfg = Debug|Win32
 		{DB2F77D8-DDDF-4942-A77F-BBED8A5E3E0B}.Debug|Win32.Build.0 = Debug|Win32
 		{DB2F77D8-DDDF-4942-A77F-BBED8A5E3E0B}.Release|Win32.ActiveCfg = Release|Win32

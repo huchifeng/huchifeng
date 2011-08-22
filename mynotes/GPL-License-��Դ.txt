@@ -1,0 +1,52 @@
+GPL-License-开源
+
+只有Android的userspace部分是ASL许可证。系统的内核依然是GPLv2许可证。
+而运行在系统上方的第三方软件，可以用任何许可证发布，包括商业性许可证和copyleft许可证。
+
+Android 仅仅使用Linux内核而不用 GNU, POSIX 之类 ?
+
+Apache许可证（ASL）
+
+在 userspace 跑，而不是在 kernel 里一起跑，就可以绕开 GPL
+
+GPLv3 明确了动态链接也是一种扩展，也要 GPL
+
+LGPL， 可以作为库使用，主程序不必开源。
+
+GPL 是对同一地址空间运行的所有代码
+
+例如开发IDE，后台调用 gpl 的编译器，可以；不属于派生作品。
+没有“紧密的数据/内存交互”，离开了gpl部分也能运行。
+但是可能发布时要明确分开。
+
+例如有gpl的驱动，和另一版本（另一种硬件）的另一驱动，
+软件可以配合任意一个一起运行，则不算 gpl驱动的派生作品。
+
+解释器gpl，语言代码只是数据，不必gpl
+
+"GPLv2 only" + "GPLv3 or later" = 不允许发布二进制版本或混合的源代码
+只能用户自己下载源码加补丁源码两个部分，编译
+
+---------------------
+调用 gpl exe 应该可以。
+
+开发一个 gpl 程序调用 msvcrt dll 属于特例，算系统服务，可以允许。
+  调用其他私有dll可能是不行的。
+
+GPL和LGPL鼓励软件自由分发，但不代表GPL/LGPL软件必须免费，像redhat linux enterprise就是收费软件，
+付费用户拿到软件后还可以再向其他人免费分发，因此GPL/LGPL软件的厂家大多只能收取软件增值服务费
+
+GPL软件的协议扩散范围仅限于进程空间内，跨进程使用GPL软件不受GPL约束
+
+----------------
+A company is running a modified version of a GPL'ed program on a web site.
+Does the GPL say they must release their modified sources?
+
+The GPL permits anyone to make a modified version and use it without ever
+distributing it to others. What this company is doing is a special case of
+that. Therefore, the company does not have to release the modified sources.
+
+AGPL 专门针对这种情况，进行了禁止
+
+----------
+

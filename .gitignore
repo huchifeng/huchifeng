@@ -23,6 +23,7 @@ _UpgradeReport_Files
 *.vsmdi
 *.testsettings
 *.settings
+*.aps
 Bak/
 Res/
 /charset-conversion/65536-fanti.txt

@@ -1,0 +1,214 @@
+﻿<html>
+<head>
+    <hta:application id="oHTA" applicationname="myApp">
+</head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>my notebooks</title>
+<style type="text/css">
+    *
+    {
+        font-size: 12px;
+        line-height: 18px;
+        font-family: 宋体;
+    }
+</style>
+</head>
+<body>
+    <span id="book_span"></span>
+    <input id="form_ed" type="input" size="120" />
+    <br />
+    <input type="submit" value="submit" onclick="the_submit()" />
+    <input type="button" value="edit" onclick="the_edit()" />
+    <span id="counter_span">0</span> <a href="#" onclick="(set_book(this.innerHTML))">notebook</a>
+    <a href="#" onclick="(set_book(this.innerHTML))">computer</a> 
+    <a href="#" onclick="(set_book(this.innerHTML))">saying</a>
+    <a href="#" onclick="(set_book(this.innerHTML))">mylang</a>
+    <a href="#" onclick="(set_show_all())">SHOW-ALL</a>
+    <br />
+    <div id="cont_div">
+    </div>
+
+    <script src="json2.js">
+    </script>
+
+    <script>
+// submit, as default button
+// onchange="input_change()" emits when focus out
+
+var sh = new ActiveXObject( "WScript.Shell" );
+sh.CurrentDirectory = window.location.pathname.replace(/\\[^\\]+$/, "");
+
+var the_filename = oHTA.commandLine.replace(/^.*\s+/, "");
+if(the_filename=="")
+    the_filename = window.location.pathname.replace(/\.hta$/i, "");
+if(the_filename=="")
+    window.close();
+the_filename = the_filename.replace(/^\s+|\s+$/g, "");    
+//alert("'"+the_filename+"'");
+//window.alert(yyyymmddHHMMSS(new Date));
+//window.alert(the_filename);
+var cont = [];
+var the_search = "";
+var the_book = "computer";
+var show_all = true;//false;
+load_cont();
+make_cont();
+form_ed.focus();
+window.setInterval(check_search, 1000);
+
+function set_show_all(){
+    show_all = ! show_all;
+    make_cont();
+}
+function set_book(b){
+    //alert(b);
+    the_book = b;
+    make_cont();
+}
+function the_template(i){
+    //window.alert(i);
+    form_ed.value = cont[i].txt; //cont[i].replace(/^\d\S+\s+/, ""); // ^\d{8}-\d{6}
+    form_ed.focus();        
+}
+function edit_rec(i){
+    var s = window.prompt("new", cont[i].txt);
+    if(s==null)
+        return;
+    cont[i].txt = s;
+    if(cont[i].txt.length<=0){
+        cont.splice(i, 1);
+    }
+    make_cont();
+    save_cont();
+    form_ed.focus();        
+}
+function check_search(){
+    //document.title = new Date;
+    //var new_search = form_ed.value.match(/^\s/) ? form_ed.value.replace(/^\s+/ ,"") : "";
+    var new_search = form_ed.value.replace(/^\s+|\s+$/g ,""); // always search, better
+    if(new_search != the_search){
+        the_search = new_search;
+        make_cont();
+    }
+}
+function the_submit(){
+    //window.alert(form_ed.value);
+    cont.push({book: the_book, date:yyyymmddHHMMSS(new Date), txt:form_ed.value.replace(/^\s+|\s+$/g, "")});
+    make_cont();
+    save_cont();
+    form_ed.value = "";
+    form_ed.focus();        
+}
+function load_cont(){
+	//load_cont_1("", the_filename);
+    var s = read_file(the_filename);
+    cont = s=="" ? [] : JSON.parse(s);
+}
+function load_cont_1(book, the_filename){
+    var lines = read_file(the_filename);
+    lines = lines.replace(/\r/g, "");
+    lines = lines.match(/^(.*)$/mg);
+    for(var i=0; i<lines.length; i++){
+        if(lines[i]=="/*"){
+            for(i++; i<lines.length; i++){
+                if(lines[i]=="*/")
+                    break;
+                cont.push({book:book, txt:lines[i].substr(16), date:lines[i].substr(0, 15)});
+                // no id, make content cross link by keywords
+            }
+            break;
+        }
+    }
+}
+function make_cont(){
+    //window.alert(cont.join(";\n"));
+    var s = "";
+    var words = the_search.toLowerCase().match(/\S+/g);
+    words = words==null ? [] : words;
+    var counter = 0;
+    var max_show = 20;
+    for(var i=cont.length-1; i>=0; i--){
+        if(!show_all && cont[i].book!=the_book)
+            continue;
+        var low = cont[i].txt.toLowerCase();
+        for(var j=0; j<words.length; j++){
+            if(low.indexOf(words[j])==-1)
+                break;
+        }
+        if(j<words.length)
+            continue;
+        if(counter <= max_show){
+            s += cont[i].book + "&nbsp;";
+            s += "<a href='#' onclick='javascript:edit_rec("+i+")'>" + cont[i].date + "</a>&nbsp;";
+            s += "<a href='#' onclick='javascript:the_template("+i+")'>" 
+		+ cont[i].txt.replace(/\s/g, "&nbsp;").replace(/</g, "&lt;") + "</a><br>\n";
+        }
+        counter ++;
+    }
+    //alert(s);
+    cont_div.innerHTML = s + (counter <= max_show ? "" : "more..<br/>\n");
+    counter_span.innerHTML = counter;
+    book_span.innerHTML = (show_all ? "ALL/" :"")+the_book;
+}
+function save_cont(){
+    var s = JSON.stringify(cont, null, 2);
+    write_file(the_filename, s, true);
+}
+function read_file(filename)
+{
+    var fso = new ActiveXObject("Scripting.FileSystemObject");
+    var s = "";
+    try{
+        var f = fso.OpenTextFile(filename, 1, false, -2); // TristateTrue==-1 means UNICODE
+	    s = f.ReadAll();
+	    f.close();
+	}catch(e){
+	}
+	return s;
+}
+function write_file(filename, s, is_unicode)
+{
+	is_unicode = (is_unicode==null ? false : is_unicode);
+    var fso = new ActiveXObject("Scripting.FileSystemObject");
+    var s0 = read_file(filename);
+    try
+    {
+        var f = fso.OpenTextFile(filename, 2, true, (is_unicode?-1:0)); // TristateTrue==-1 means UNICODE
+        s = s.replace(/\r\n/mg, "\n").replace(/(\r|\n)/mg, "\r\n");
+        f.Write(s);
+    }
+    catch(e)
+    {
+        alert("save fail, maybe strange characters");
+        f.Close();
+        var f = fso.OpenTextFile(filename, 2, true, (is_unicode?-1:0)); // TristateTrue==-1 means UNICODE
+        s0 = s0.replace(/\r\n/mg, "\n").replace(/(\r|\n)/mg, "\r\n");
+        f.Write(s0);
+        window.location.reload();
+    }
+    f.Close();
+}
+function string_format(s, n, c)
+{
+	s = String(s);
+	while(s.length < n)
+	{
+		s = c + s;
+	}
+	return s;
+}
+function yyyymmddHHMMSS(d)
+{
+	return string_format(d.getFullYear(), 4, "0") + string_format(d.getMonth()+1, 2, "0") + string_format(d.getDate(), 2, "0")
+	    +"-" + string_format(d.getHours(), 2, "0") + string_format(d.getMinutes(), 2, "0") + string_format(d.getSeconds(), 2, "0");
+}
+function the_edit()
+{
+    var WshShell = new ActiveXObject("WScript.Shell");
+    WshShell.Run("\"C:\\Program Files\\Microsoft Visual Studio 9.0\\Common7\\IDE\\devenv.exe\" " + window.location.pathname);
+}
+
+</script>
+
+</body>
+</html>
