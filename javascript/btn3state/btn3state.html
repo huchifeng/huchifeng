@@ -1,0 +1,34 @@
+<html>
+	<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<link type="text/css" href="css/smoothness/jquery-ui-1.8.15.custom.css" rel="stylesheet" />	
+	<script src="js/jquery-1.6.2.min.js"></script>
+	<script type="text/javascript" src="js/jquery-ui-1.8.15.custom.min.js"></script>
+</head>
+<style>
+
+button.toolbar{ background:transparent; }
+button.toolbar:hover{ background:url(btn-selected.png) no-repeat; }
+button.toolbar:active{ background:url(btn-pressed.png) no-repeat; }
+button.toolbar:disabled{ background: #AAA; } /* lightgray */
+
+</style>
+<body style="background-color:white; margin:0px; ">
+
+<div id=toolbar_div style="position:absolute; left:100px; top:100px;" >
+<img src="toolbar-bg.png" style="" >
+  
+<button class="toolbar" id=btn1
+  style="position:absolute; border:0px; left:3px; top:3px; height:39px; width:39px; " 
+  onclick="btn2.disabled = !btn2.disabled;"
+  ><img src="color.png" style="position:absolute; left:0; top:0;"></button>
+
+<button class="toolbar" id=btn2
+  style="position:absolute; border:0px; left:45px; top:3px; height:39px; width:39px; " 
+  onclick="btn1.disabled = !btn1.disabled;"
+  ><img src="color.png" style="position:absolute; left:0; top:0;"></button>
+
+</div>
+
+</body>
+</html>
