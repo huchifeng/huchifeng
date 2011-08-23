@@ -1,0 +1,4 @@
+﻿#p1 {color: #0f0; }
+@variable:        #00f;
+#p2 { color:@variable; }
+
