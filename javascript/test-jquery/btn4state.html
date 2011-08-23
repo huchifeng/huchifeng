@@ -11,6 +11,10 @@
     html { overflow: hidden; }
     *{ font-family: simsung; }
 
+input[type=button].btn4state2 { background:url(myimage/btn-pass-1.png) no-repeat;  }
+input[type=button].btn4state2:hover { background:url(myimage/btn-pass-2.png) no-repeat;  }
+input[type=button].btn4state2:active { background:url(myimage/btn-pass-3.png) no-repeat;  }
+input[type=button].btn4state2:disabled { background:url(myimage/btn-pass-0.png) no-repeat;  }
 
 </style>
 <body style="background-color:white; margin:0px; ">
@@ -21,6 +25,12 @@
     background:url(myimage/btn-pass-1.png) no-repeat;" 
   onclick="do_pass()"
   class="btn4state"
+  />
+纯css的4态按钮
+<input type="button" value="                                     " 
+  style="position:absolute; border:0px; left:300px; top:50px;  height:39px; no-repeat;" 
+  onclick="this.disabled=true;"
+  class="btn4state2"
   />
 </div>
 hello, world;
