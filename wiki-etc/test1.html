@@ -1,0 +1,98 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+<html dir='ltr' xmlns='http://www.w3.org/1999/xhtml' 
+  xmlns:b='http://www.google.com/2005/gml/b'   xmlns:data='http://www.google.com/2005/gml/data'
+  xmlns:expr='http://www.google.com/2005/gml/expr'> 
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<script src="creole-1.0.js"></script>
+</head> 
+<body> 
+
+
+<div id="demo"></div> 
+
+<textarea id="wikitext" rows="10" style="width: 97%;">
+
+http://www.wikicreole.org/wiki/Home
+
+this is //italics//, this is **bold 粗体**,
+this is link to [[wikipage]], 
+this is [[http://www.google.com|Google]];
+
+{{{
+[[WikiCreole:xxx|title]] and [[Wikipedia:xxxx|title]] links to different site; defined in your own code
+}}}
+
+force\\line-break
+
+horizontal line: four "-"
+----
+
+ You can put images inside links ??
+[[http:www.baidu.com|{{http://su.bdimg.com/static/superpage/img/logo_1.png|image-title}}]]
+ use http like Wikipedia
+
+* Bullet list
+* second
+** sub
+
+# numbered list
+# second
+## sub
+
+= largest
+== large
+=== medium
+==== small
+===== smaller
+
+|=|=table|=header|
+|a|table | row   |
+|b|table|row|
+
+
+{{{
+no wiki, 
+no format,
+just text <pre>
+ 适合粘贴源码
+}}}
+
+</textarea>
+
+<script>
+function $(id) {
+    return document.getElementById(id);
+}
+ 
+function decodeEntities(str) {
+    return str.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"');
+}
+ 
+window.onload = function() {
+    var input = $('wikitext');
+    var demo = $('demo');
+    var creole = new Parse.Simple.Creole( {
+        forIE: document.all,
+        interwiki: {
+            WikiCreole: 'http://www.wikicreole.org/wiki/',
+            Wikipedia: 'http://en.wikipedia.org/wiki/'
+        },
+        linkFormat: ''
+    } );
+ 
+    var render = function() {
+        demo.innerHTML = '';
+        creole.parse(demo, input.value);
+    };
+ 
+    input.onkeyup = function() {
+        render();
+    };
+ 
+    render();
+}
+
+</script>
+</body>
+</html>
