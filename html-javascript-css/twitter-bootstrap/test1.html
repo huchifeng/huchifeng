@@ -1,0 +1,103 @@
+﻿
+<!DOCTYPE html> 
+<html lang="en"> 
+  <head> 
+    <meta charset="utf-8"> 
+    <title>Bootstrap, 来自 Twitter</title> 
+ 
+    <link href="bootstrap-1.1.0.css" rel="stylesheet"> 
+
+<style>
+
+</style>
+  </head> 
+ 
+  <body onload=""> 
+
+<br/>
+
+<div class="row" style="background:lightblue;">
+  <div class="span1" style="background:lightgreen;">1111111 1111</div>
+  <div class="span2" style="background:lightgray;">22222222 22222222</div>
+  <div class="span3">33333333333333 33333333 33333333333</div>
+  <div class="span4">444444444 444444444444444444</div>
+</div>
+
+<br/>
+
+  <div class="container-fluid">
+    <div class="sidebar" style="background:#ee0;height:50px;">
+     sidebar     sidebar     sidebar     sidebar     sidebar     sidebar
+    </div>
+    <div class="content" style="background:#e0e;height:50px;">
+      content content content content content content content content
+    </div>
+  </div>
+
+ <address>
+Twitter, Inc.<br/>
+795 Folsom Ave, Suite 600<br/>
+San Francisco, CA 94107<br/>
+P: (123) 456-7890<br/>
+ </address>
+
+<form class="">
+<fieldset>
+<legend>example form legend</legend>
+<div class="clearfix">
+<label for=input1>label</label><div class=input><input id=input1 type=text size=20 value="123"></div>
+</div>
+<div class="clearfix error">
+<label for=input1>label</label><div class=input><input id=input1 type=text size=20 value="123"></div>
+</div>
+<div class="actions">
+<input type=submit class="btn primary">
+</div>
+</fieldset>
+</form>
+
+<form class="form-stacked">
+<fieldset>
+<legend>example form legend; form-stacked</legend>
+<div class="clearfix">
+<label for=input1>label</label><div class=input><input id=input1 type=text size=20 value="123"></div>
+</div>
+<div class="clearfix error">
+<label for=input1>label</label><div class=input><input id=input1 type=text size=20 value="123"></div>
+</div>
+<input type=reset class="btn" value="Reset class=btn">
+<input type=reset class="btn" disabled>
+</fieldset>
+</form>
+
+<ul class="tabs">
+  <li class="active"><a href="#" onclick="return do_sel(this)">Home</a></li>
+  <li><a href="#" onclick="return do_sel(this)">Profile</a></li>
+  <li><a href="#" onclick="return do_sel(this)">Messages</a></li>
+  <li><a href="#" onclick="return do_sel(this)">Settings</a></li>
+  <li><a href="#" onclick="return do_sel(this)">Contact</a></li>
+</ul>
+<script>
+function do_sel(a){
+  a = a.parentNode;
+  var ulist=(a.parentNode.children);
+  for(var i=0; i<ulist.length; i++)
+    ulist[i].className="";
+  div_tab_out.innerHTML=a.innerHTML;
+  a.className="active";
+  return false;
+}
+</script>
+<div id=div_tab_out>hello</div>
+
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+
+</body> 
+</html>
