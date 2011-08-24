@@ -15,9 +15,11 @@
 </head>
 <body>
     <span id="book_span"></span>
-    <input id="form_ed" type="input" size="120" />
     <br />
-    <input type="submit" value="submit" onclick="the_submit()" />
+    <textarea id="form_ed" rows=5 cols=120/></textarea>
+    <br />
+    <input type="submit" id=btn_submit value="add" onclick="the_submit()" />
+    <input type="reset" value="reset" onclick="btn_submit.value='add';form_ed.value='';" />
     <input type="button" value="edit" onclick="the_edit()" />
     <span id="counter_span">0</span> <a href="#" onclick="(set_book(this.innerHTML))">notebook</a>
     <a href="#" onclick="(set_book(this.innerHTML))">computer</a> 
@@ -48,6 +50,7 @@ the_filename = the_filename.replace(/^\s+|\s+$/g, "");
 //window.alert(yyyymmddHHMMSS(new Date));
 //window.alert(the_filename);
 var cont = [];
+var current_id = -1;
 var the_search = "";
 var the_book = "computer";
 var show_all = true;//false;
@@ -71,32 +74,44 @@ function the_template(i){
     form_ed.focus();        
 }
 function edit_rec(i){
-    var s = window.prompt("new", cont[i].txt);
-    if(s==null)
-        return;
-    cont[i].txt = s;
-    if(cont[i].txt.length<=0){
-        cont.splice(i, 1);
-    }
-    make_cont();
-    save_cont();
-    form_ed.focus();        
+    the_template(i);
+    btn_submit.value = "modify";    
+    current_id = i;    
 }
 function check_search(){
     //document.title = new Date;
     //var new_search = form_ed.value.match(/^\s/) ? form_ed.value.replace(/^\s+/ ,"") : "";
-    var new_search = form_ed.value.replace(/^\s+|\s+$/g ,""); // always search, better
+    var new_search = form_ed.value.replace(/^\s+|\s+$/g ,"");
+    new_search = new_search.replace(/,|，|\.|。|;|；|:|：|'|"/g, " "); // always search, better
     if(new_search != the_search){
         the_search = new_search;
         make_cont();
     }
 }
 function the_submit(){
-    //window.alert(form_ed.value);
-    cont.push({book: the_book, date:yyyymmddHHMMSS(new Date), txt:form_ed.value.replace(/^\s+|\s+$/g, "")});
+    var s = form_ed.value.replace(/^\s+|\s+$/g, "");
+    if(btn_submit.value=='modify'){
+        //return;
+        if(current_id<0){
+            window.close();
+            return;
+        }
+        if(s.length==0){
+            cont.splice(current_id, 1);
+        }
+        else{
+            cont[current_id].txt = s;
+            cont[current_id].book = the_book;
+        }
+        current_id = -1;
+    }
+    else{
+        cont.push({book: the_book, date:yyyymmddHHMMSS(new Date), txt:s});
+    }
     make_cont();
     save_cont();
     form_ed.value = "";
+    btn_submit.value = "add";
     form_ed.focus();        
 }
 function load_cont(){
@@ -141,7 +156,7 @@ function make_cont(){
             s += cont[i].book + "&nbsp;";
             s += "<a href='#' onclick='javascript:edit_rec("+i+")'>" + cont[i].date + "</a>&nbsp;";
             s += "<a href='#' onclick='javascript:the_template("+i+")'>" 
-		+ cont[i].txt.replace(/\s/g, "&nbsp;").replace(/</g, "&lt;") + "</a><br>\n";
+		+ cont[i].txt.replace(/[ ]/g, "&nbsp;").replace(/</g, "&lt;").replace(/\n/g,"<br/>") + "</a><br>\n";
         }
         counter ++;
     }
