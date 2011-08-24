@@ -1,0 +1,19 @@
+﻿<html>
+<head>	
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">	
+</head>
+<body>
+<script>
+window.setInterval(f1, 3000);
+f1();
+function f1(){
+	chrome.browserAction.setBadgeText({ "text": String(Math.floor(Math.random()*10000)) });
+}
+</script>
+
+hello, world  // no effect
+//alert(9);//
+
+
+</body>
+</html>

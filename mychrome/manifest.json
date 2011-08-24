@@ -1,0 +1,20 @@
+﻿{
+  "name": "mychrome extension",
+ 
+  "version": "1.0",
+  
+  "description": "The first extension that I made. 测试",
+ "permissions": [
+    "tabs", "http://*/*"
+  ] ,
+   "background_page": "background.html",
+   "browser_action": {
+      "default_icon": "mychrome.png",
+      "default_title": "mychrome extension 测试",
+       "popup": "popup.html"
+   },
+  "permissions": [
+    "http://api.flickr.com/"
+  ]
+ 
+}
