@@ -13,6 +13,11 @@ pause
 
 exit /b
 
+waf 没有含义
+
+samba, node.js 使用 waf
+
+可以生成 for IDE 项目文件(eclipse, vs);
 
 wget http://waf.googlecode.com/files/waf-1.6.6.tar.bz2
 python waf --version
@@ -29,17 +34,3 @@ python waf-light --make-waf --tools=compat15,test1.py --prelude=$'\tfrom waflib.
 自定义一段脚本。
 
 python %waf%\waf --help
-
-
-指定输出目录等，与make类似；
-可以多级目录建 wscript 文件，recursive 调用；
-
-
-
-
-
-
-
-
-
-
