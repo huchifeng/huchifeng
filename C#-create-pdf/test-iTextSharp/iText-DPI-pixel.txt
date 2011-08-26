@@ -1,0 +1,8 @@
+PDF files don’t have a DPI – PDF is a resolution independent format.
+
+无缩放图片是 72dpi; 缩小 N 倍 则是 72*N dpi; 如 24% scale 得到 300dpi;
+
+可能画线也是 1pixel=1/72 inch
+
+屏幕绘图像素可能 120 dpi ? 则 屏幕画 10 像素宽线条，PDF 应该 6 像素， 得到 1/12 inch
+
