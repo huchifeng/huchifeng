@@ -166,10 +166,10 @@ function make_cont(){
         if(j<words.length)
             continue;
         if(counter <= max_show){
-            s += cont[i].book + "&nbsp;";
-            s += "<a href='#' onclick='javascript:edit_rec("+i+")'>" + cont[i].date + "</a>&nbsp;";
-            s += "<a href='#' onclick='javascript:the_template("+i+")'>" 
-		+ cont[i].txt.replace(/[ ]/g, "&nbsp;").replace(/</g, "&lt;").replace(/\n/g,"<br/>") + "</a><br>\n";
+            s += "<span style=\"display:inline-block; vertical-align:top;\">" + cont[i].book + "&nbsp;";
+            s += "<a  href='#' onclick='javascript:edit_rec("+i+")'>" + cont[i].date + "</a></span>&nbsp;";
+            s += "<span style=\"display:inline-block; vertical-align:top;\"><a href='#' onclick='javascript:the_template("+i+")'>" 
+		+ cont[i].txt.replace(/[ ]/g, "&nbsp;").replace(/</g, "&lt;").replace(/\n/g,"<br/>") + "</a></span><br>\n";
         }
         counter ++;
     }
