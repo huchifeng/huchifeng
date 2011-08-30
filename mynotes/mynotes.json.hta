@@ -20,13 +20,15 @@
     <a href="#" onclick="(set_book(this.innerHTML))">saying</a>
     <a href="#" onclick="(set_book(this.innerHTML))">mylang</a>
     <a href="#" onclick="(set_show_all())">SHOW-ALL</a>
-    <input type="button" value="edit src" onclick="the_edit()" />
+    <input type="button" value="notepad" onclick="the_edit()" />
+    <input type="button" value="vs" onclick="the_edit2()" />
     <br />
     <textarea id="form_ed" rows=5 cols=120/></textarea>
     <br />
     A:<input type="submit" id=btn_submit value="add" accesskey="A" onclick="the_submit()" />
+    M:<input type="submit" id=btn_modify value="modify" accesskey="M" onclick="the_modify()" />
     D:<input type="submit" id=btn_del value="del" accesskey="D" onclick="the_delete()" />
-    <input type="reset" value="reset" onclick="btn_submit.value='add';form_ed.value='';" />
+    R:<input type="reset" value="reset" accesskey="D" onclick="btn_submit.value='add';form_ed.value='';" />
     <br />
     <div id="cont_div">
     </div>
@@ -51,12 +53,13 @@ the_filename = the_filename.replace(/^\s+|\s+$/g, "");
 //window.alert(yyyymmddHHMMSS(new Date));
 //window.alert(the_filename);
 var cont = [];
-var current_id = -1;
+var current_id;
 var the_search = "";
 var the_book = "computer";
 var show_all = true;//false;
 load_cont();
 make_cont();
+set_current_id(-1); // for modify
 form_ed.focus();
 window.setInterval(check_search, 1000);
 
@@ -69,15 +72,10 @@ function set_book(b){
     the_book = b;
     make_cont();
 }
-function the_template(i){
-    //window.alert(i);
+function edit_rec(i){
     form_ed.value = cont[i].txt; //cont[i].replace(/^\d\S+\s+/, ""); // ^\d{8}-\d{6}
     form_ed.focus();        
-}
-function edit_rec(i){
-    the_template(i);
-    btn_submit.value = "modify";    
-    current_id = i;    
+    set_current_id(i);
 }
 function check_search(){
     //document.title = new Date;
@@ -90,41 +88,45 @@ function check_search(){
     }
 }
 function the_delete(){
-        if(current_id<0){
-            window.close();
-            return;
-        }
-        cont.splice(current_id, 1);
-        current_id = -1;
-        after_change();
+    if(current_id<0){
+        window.close();
+        return;
+    }
+    cont.splice(current_id, 1);
+    set_current_id(-1);
+    after_change();
 }
-function the_submit(){
+function set_current_id(i){
+    current_id = i;
+    btn_modify.disabled = (i==-1);
+    btn_del.disabled = (i==-1);
+}
+function the_modify(){
+    if(current_id<0){
+        window.close();
+        return;
+    }
     var s = form_ed.value.replace(/^\s+|\s+$/g, "");
-    if(btn_submit.value=='modify'){
-        //return;
-        if(current_id<0){
-            window.close();
-            return;
-        }
-        if(s.length==0){
-            cont.splice(current_id, 1);
-        }
-        else{
-            cont[current_id].txt = s;
-            cont[current_id].book = the_book;
-        }
-        current_id = -1;
+    if(s.length==0){
+        cont.splice(current_id, 1);
     }
     else{
-        cont.push({book: the_book, date:yyyymmddHHMMSS(new Date), txt:s});
+        cont[current_id].txt = s;
+        cont[current_id].book = the_book;
     }
+    set_current_id(-1);
+    after_change();
+}
+function the_submit(){
+    set_current_id(-1);
+    var s = form_ed.value.replace(/^\s+|\s+$/g, "");
+    cont.push({book: the_book, date:yyyymmddHHMMSS(new Date), txt:s});
     after_change();
 }
 function after_change(){
     make_cont();
     save_cont();
     form_ed.value = "";
-    btn_submit.value = "add";
     form_ed.focus();        
 }
 function load_cont(){
@@ -168,8 +170,8 @@ function make_cont(){
         if(counter <= max_show){
             s += "<span style=\"display:inline-block; vertical-align:top;\">" + cont[i].book + "&nbsp;";
             s += "<a  href='#' onclick='javascript:edit_rec("+i+")'>" + cont[i].date + "</a></span>&nbsp;";
-            s += "<span style=\"display:inline-block; vertical-align:top;\"><a href='#' onclick='javascript:the_template("+i+")'>" 
-		+ cont[i].txt.replace(/[ ]/g, "&nbsp;").replace(/</g, "&lt;").replace(/\n/g,"<br/>") + "</a></span><br>\n";
+            s += "<span style=\"display:inline-block; vertical-align:top;\">" +
+                cont[i].txt.replace(/[ ]/g, "&nbsp;").replace(/</g, "&lt;").replace(/\n/g,"<br/>") + "</a></span><br>\n";
         }
         counter ++;
     }
@@ -233,8 +235,12 @@ function yyyymmddHHMMSS(d)
 function the_edit()
 {
     var WshShell = new ActiveXObject("WScript.Shell");
-    //WshShell.Run("\"C:\\Program Files\\Microsoft Visual Studio 9.0\\Common7\\IDE\\devenv.exe\" " + window.location.pathname);
     WshShell.Run("\"notepad\" " + window.location.pathname);
+}
+function the_edit2()
+{
+    var WshShell = new ActiveXObject("WScript.Shell");
+    WshShell.Run("\"C:\\Program Files (x86)\\Microsoft Visual Studio 9.0\\Common7\\IDE\\devenv.exe\" " + window.location.pathname);
 }
 
 </script>
