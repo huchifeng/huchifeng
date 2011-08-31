@@ -1,5 +1,6 @@
 set path=%ProgramFiles%\TortoiseGit\bin;%path%
 set path=%ProgramFiles(x86)%\Git\bin;%path%;
+set path=%ProgramFiles%\Git\bin;%path%;
 
 cd /d %~dp0 || goto ::ERR
 
