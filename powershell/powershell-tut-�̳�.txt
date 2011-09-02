@@ -1,0 +1,409 @@
+新一篇: Windows PowerShell 入门指南 | 旧一篇: 中国最好的一些源码下载站点排名
+Windows PowerShell 语言快速参考
+ 
+ 
+为不同类型的系统提供的本机支持      
+Windows PowerShell 对 WMI、XML、ASDI、ADO 和 COM 对象进行了改编以提供通用语法来访问其属性和方法。  
+示例
+$g = Get-WmiObject Win32_Process
+$g[0].Name  # instead of $g[0].Properties[“Name”]
+      
+算术二元运算符      
+ 
++     加法，串联      
+-    减法      
+*    乘法，字符串重复      
+/     除法      
+%     模
+     
+      
+数组操作      
+此数组中是否包含 3
+1,2,3,5,3,2 –contains 3
+
+返回所有等于 3 的元素：
+1,2,3,5,3,2 –eq 3
+
+返回所有小于 3 的元素：
+1,2,3,5,3,2 –lt 3
+
+测试 2 是否存在于集合中：
+if (1, 3, 5 –contains 2)
+其他运算符：-gt、-le、-ge、-ne
+      
+数组      
+ 
+“a”,“b”,”c”    字符串数组      
+1,2,3     整数数组      
+@()    空数组      
+@(2)    1 个元素的数组      
+1,(2,3),4    数组包含数组      
+,”hi”    一个元素的数组      
+$a[5]    数组的第六个元素*      
+$a[2][3]    数组的第四个或第三个      
+    元素      
+$a[2..20]    返回从第 3 个元素到第 21 个元素     
+·    数组从零开始。
+      
+赋值运算符      
+=, +=, -=, *=, /=, %=
+
+      
+关联数组（哈希表）      
+ 
+$hash = @{ }    创建空哈希表      
+$h =@{foo=1;bar=2}    创建并初始化哈希表      
+$hash.key1 = 1    将 1 赋予键“key1”      
+$hash.key1    返回 key1 的值      
+$hash["key1"]    返回 key1 的值     
+      
+布尔值和运算符      
+ 
+TRUE    FALSE      
+$TRUE    $FALSE      
+所有长度大于 0 的字符串（单词“false”除外）    空字符串或字符串“false”      
+所有不等于 0 的数字    所有等于 0 的数字      
+长度大于 1 的数组    长度为 0 的数组      
+长度为 1，其元素为 TRUE 的数组    长度为 1，其元素为 FALSE 的数组      
+对所有对象的引用    空值     
+      
+Break（脚本）      
+break 命令用于退出循环。它可以接收要退出到的可选 LABEL
+示例：
+while (1)
+{               $a = something
+if ($a –eq 1) break;
+}
+      
+命令扩展运算符      
+ 
+$( )    返回空值      
+$(1,2,3)    返回包含 1、2、3 的数组。      
+$(Get-Alias a*)    返回表达式的计算结果      
+@(Get-Alias;Get-Process)    执行其中的两条命令，然后在数组中返回结果     
+      
+注释      
+# 这是注释，因为 # 是第一个标记字符
+$a = “#这不是注释…”
+$a = “something” # …但这个 # 号后是注释。
+Write-Host Hello#world
+      
+比较运算符      
+ 
+-eq    等于      
+-ne     不等于      
+-gt –ge    大于，大于或等于      
+-lt –le    小于，小于或等于     
+
+可以在运算符前加上“i”或“c”以指定不区分大小写或区分大小写的操作（例如，–ceq）      
+Continue（脚本）      
+continue 语句表示继续执行循环的下一次迭代，而不退出循环。示例：
+while (1)
+{               $a = something
+    if ($a –eq 1) (continue)
+    # 除非 $a 等于 1，否则将不会执行此行。
+}
+#  永远不会执行此行。      
+Dot Sourcing      
+Dot sourcing 允许在当前作用域（而不是本地作用域）中运行函数、脚本块和脚本。示例：
+. MyFunction
+
+如果 MyFunction 设置了变量，则该变量是针对当前作用域（而不是该函数的本地作用域）设置的。
+$a = {$x = Get-Process | Select –First 2}
+. $a    #在当前作用域中计算脚本块
+      
+转义序列      
+ 
+Windows PowerShell 转义字符为倒撇号，即 `。若要将字符设置为文本格式，请在其前加上 `。若要指定 `，请使用 ``。
+特殊转义序列      
+`0     （空值）      
+`a     （警报）      
+`b     （退格）      
+`f     （换页）      
+`n     （新行）      
+`r     （回车）      
+`t     （制表符）      
+`v    （垂直引号）
+     
+      
+执行顺序      
+Windows PowerShell 尝试按以下顺序解析命令：别名、函数、cmdlet、脚本、可执行文件和正常文件。
+      
+For（脚本）      
+[:label] for ([初始值]; [条件]; [迭代值]) {}
+
+示例：
+for ($i = 0; $i –lt 5; $i++) {Write-Object $i}
+      
+Foreach（脚本）      
+[:label]
+foreach (集合中的标识符) {}
+Expression | foreach {}
+Expression | foreach {BEGIN{} PROCESS{} END{}}
+
+示例：
+$i = 1,2,3
+foreach ($z in $i) {Write-Object $z}
+Get-Process |foreach {BEGIN{$x=1}
+PROCESS{$X++}
+END{“$X Processes”}}
+      
+Function（脚本）      
+function MyFunction {
+    write-object $args[0]
+}
+
+function test ([string]$label=”default label”,[int]$start=0)
+{ BEGIN {$x=$start} PROCESS {??label:$_’; $x++}
+END{“$x total”}
+}      
+Filter（脚本）      
+Filter 是编写带有 PROCESS 脚本块的函数的速记方式。
+filter MyFilter {
+    $_.name
+}      
+If/elseif/else（脚本）      
+if (condition) {…}
+elseif (condition) {…}
+else {…}
+
+在命令行中，右大括号必须与 elseif 和 else 同行。此限制不适用于脚本。      
+调用运算符      
+& 运算符可用于调用脚本块或命令/函数的名称。
+示例：
+$a = “Get-Process”
+&$a
+$a = { Get-Process | Select -First 2 }
+&$a
+      
+逻辑运算符      
+!、-not、-and、-or
+      
+方法调用      
+可以针对对象调用方法。示例：
+$a = “这是字符串”
+$a.ToUpper()
+$a.SubString(0,3)
+$a.SubString(0,($a.length/2))
+$a.Substring(($a.length/2), ($a.length/3))
+
+使用“::”运算符可以调用静态方法
+[DateTime]::IsLeapYear(2005)
+      
+Windows PowerShell 自动变量（未全部列出）      
+ 
+$$    前一命令行的最后一个标记      
+$?    上一命令的布尔状态      
+$^    前一命令行的第一个标记      
+$_    当前管道对象      
+$Args    为脚本或函数指定的参数      
+$Error    先前命令中的错误数组      
+$Foreach    引用 foreach 循环中的枚举器      
+$Home    用户的主目录；通常设置为 %HOMEDRIVE%\%HOMEPATH%      
+$Host    引用宿主 POWERSHELL 语言的应用程序      
+$Input    通过管道传递给脚本的对象的枚举器      
+$LastExitCode    上一程序或脚本的退出代码      
+$Matches    使用 –match 运算符找到的匹配项的哈希表      
+$PSHome    Windows PowerShell 的安装位置      
+$profile    标准配置文件（可能不存在）      
+$StackTrace    Windows PowerShell 捕获的上一异常      
+$Switch    switch 语句中的枚举器     
+      
+对象属性      
+使用“.”运算符可以直接引用对象的属性。
+$a = Get-Date
+$a.Date
+$a.TimeOfDay.Hours
+使用“::”运算符可以引用静态属性
+[DateTime]::Now
+
+      
+运算符优先级      
+在 Windows PowerShell 中，运算符是按照以下优先顺序进行计算的：() {}、@ $、!、[ ]、.、&、++ --、一元 + -、* / %、二元 + -、比较运算符、-and –or、|、> >>、=
+
+      
+其他运算符      
+
+ 
+,    数组构造函数      
+..    范围运算符      
+-contains          
+-is    类型鉴别器      
+-as    类型转换器      
+-band    二进制与      
+-bor    二进制或      
+-bnot    二进制非     
+      
+Return（脚本）      
+return 命令用于退出当前脚本或函数并返回值。 
+示例：
+function foo {
+    return 1
+}
+      
+Scopes（脚本）      
+在不同的作用域中可以将变量和其他数据元素实例化：
+·    全局作用域中的变量对所有作用域均可见。
+·    脚本作用域中的变量只对该脚本文件中的所有作用域可见。
+·    本地作用域中的变量仅在当前作用域及其子域中可见。
+·    私有作用域变量仅对当前作用域可见。 
+作用域是在外壳程序函数的函数体中创建的（请参阅函数创建）
+
+示例：
+$global:a = 4
+$script:a = 5
+$local:a  = 3
+$private:a = 6
+
+      
+脚本块      
+命令和表达式可存储于脚本块以供以后执行。 
+示例：
+
+$block = {Get-Process; $a=1}
+&$block      
+脚本      
+Windows PowerShell 命令可存储于脚本文件中，并可从其中执行。Windows PowerShell 脚本的文件扩展名为“.ps1”。参数可传递给脚本，而脚本可返回值。 
+示例：
+$sum = MyAdder.ps1 1 2 3
+      
+字符串      
+字符串常量：
+“这是字符串，此 $variable 可展开为 $(2+2)”
+‘这是字符串，此 $variable 不能展开’
+@”
+这是“here string”，其中可包含任意字符（包括回车和引号）。将计算表达式 $(2+2)
+”@
+@’
+带单引号的“here string”不计算表达式。 ‘@
+
+ 
+字符串运算符      
++    连接两个字符串      
+*    按特定次数重复字符串      
+-f    设置字符串格式（.NET 格式说明符）      
+-replace    替换运算符
+"abcd" –replace “bc”, “TEST”
+aTESTd      
+-match    正则表达式匹配      
+-like    通配符匹配     
+      
+
+Switch（脚本）      
+在该脚本中可以使用变量 $_。$_ 表示当前正在计算的值。如果在 switch 中使用了数组，则将测试该数组的所有元素。
+示例：
+$var = "word1","word2","word3"
+switch -regex ($var) {
+"word1"  {"Multi-match Exact " + $_ }
+"word2"  {"Multi-match Exact " + $_ }
+"w.*2"   {"Pattern match Exact " + $_ }
+default  {"Multi-match Default " + $_ }
+}
+
+输出：
+Multi-match Exact word1
+Multi-match Exact word2
+Pattern match Exact word2
+Multi-match Default word3
+      
+Throw      
+Throw 为脚本提供的功能等同于 ThrowTerminatingError API 为 cmdlet 提供的功能。 
+throw "Danger, Danger"
+Danger, Danger
+所在行:1 字符:6
++ throw  <<<< "Danger, Danger"
+Throw 接受字符串、异常或 ErrorRecord 作为参数。
+      
+Trap      
+Trap [ExceptionType] {
+if (…)
+{    continue
+# 从导致 trap 的脚本语句之后的下一语句继续；
+# $? 将更新，但不生成任何错误记录
+} else  (…)
+{      Break  
+#  再次引发异常
+}
+#  不执行 $ErrorActionPreference 设置中
+#  指定的任何操作
+}
+
+      
+类型操作（脚本）      
+
+-is   IS 类型（例如，$a -is [int]）
+-as   转换为类型（例如 1 -as [string] 将 1 作为字符串处理）
+      
+Until（脚本）      
+
+do
+{
+…
+} until (condition)
+
+      
+变量      
+格式：
+$[scope:]名称  或 ${任何名称} or ${任何路径}
+
+示例：
+$a = 1
+${!@#$%^&*()}=3
+$global:a = 1  # 在所有位置可见
+$local:a = 1     # 在此作用域中定义且对子作用域可见
+$private:a=1    # 与本地作用域相同，但对子作用域不可见
+$script:a=1     # 对此脚本中的所有作用域均可见
+$env:path = “d:\windows”
+${C:\TEMP\testfile.txt}=”这将写入文件”
+Get-Variable –scope 1 a  #从父作用域获取值
+Get-Variable –scope 2 a  # 祖父
+
+      
+While（脚本）      
+[:label] while (condition)
+{ 
+…
+}
+
+do
+{
+…
+} while (condition)
+
+
+      
+分析      
+Windows PowerShell 可以按两种模式进行分析 -- 命令模式和表达式模式。在表达式模式下，Windows PowerShell 以最高级别语言分析方法来进行分析：若为数字，则原样表示该数字；若为字符串，则需要加引号，依此类推。表达式的表示方法如下所示：
+2+2
+4
+"Hello" + " world"
+Hello world
+$a = "hi"
+$a.length * 13
+26
+在命令模式下进行分析时，字符串不需要加引号，除变量和圆括号中的内容外的所有内容均可看作字符串。例如：
+copy users.txt accounts.txt     
+可将 users.txt 和 accounts.txt 视为字符串
+write-host 2+2           
+可将 2+2 视为字符串，而不是要计算结果的表达式
+copy $src $dest          
+$src 和 $dest 是变量。从长远的角度来看，如果在命令外壳程序中工作时不需要使用引号，则大有裨益，因为这大大减少了所需的键入量。
+分析模式是由遇到的第一个标记确定的。如果该标记为数字、变量或由引号括起的字符串，则外壳程序以表达式模式进行分析。如果该行以字母、&（and 符）或 .（点）后跟空格或字母开头，则将以命令模式进行分析。
+ 
+2+2     以数字开头为表达式模式。      
+"text"    以引号开头为表达式模式。      
+text    以字母开头为命令模式。       
+& "text"     以 and 符开头为命令模式。      
+. "file.ps1"    以点后跟空格开头为命令模式。       
+.125    以点后跟数字（而不是空格或字母）开头为表达式模式。      
+.text    以作为命令名称“.text”的一部分的点开头为命令模式     
+将表达式和命令混合使用是非常有用的；使用圆括号即可实现这一点。模式发现过程从圆括号内开始。
+Write-Host (2+2)
+将 2+2 视为要计算结果的表达式，传递给 Write-Host 命令。
+(Get-Date).day + 2
+将 Get-Date 视为命令，其执行结果将成为该表达式左边的值。
+您可以不受限制地嵌套命令和表达式。
+Write-Host ((Get-Date).day + 2)
+Get-Date 是命令。((Get-Date).day+2) 是表达式，而 Write-Host ((Get-Date).day + 2) 也是命令。
+Write-Host ((Get-Date) - (Get-Date).date)
+两次使用 Get-Date 命令以确定自午夜 12 点起（条件）已过多长时间。
