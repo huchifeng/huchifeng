@@ -1,0 +1,13 @@
+ECUG Con 2011 大会筹划中
+http://ecug.org/
+尽管 Erlang 给分布式开发带来了很好的思路，但是距离大规模应用的可能性还很远。Erlang 语言的优点和缺陷同样明显。
+但是 Go 语言带来了工程上大范围应用的希望。这两门语言有着相同的理念：让分布式开发更容易。
+Erlang 是这个领域的先河，Golang 则是集大成者。
+
+可以说，Go 语言是近年来语言变革的最重要的里程碑（没有之一）。
+
+web server 性能
+可能 c(nginx), Java > Go, Erlang
+
+http://code.google.com/p/gomingw/downloads/list
+

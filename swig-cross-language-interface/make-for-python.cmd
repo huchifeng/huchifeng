@@ -14,8 +14,8 @@ rem cl /? & pause
 rem swig --help
 
 swig -python example.i
-cl  example.c example_wrap.c /Fe"example.dll" /LD
-move example.dll _example.pyd
+cl  example.c example_wrap.c /Fe"_example.pyd" /LD
+rem move example.dll _example.pyd
 python runme.py
 
 pause

@@ -1,0 +1,15 @@
+第一次提交产生3个obj
+  commit 对象
+  blob(文件)对象
+  tree(整个目录)对象
+ref/heads 产生 master, 仅引用 commit id
+logs 目录 master, HEAD; 含提交注释
+index, COMMIT_EDITMSG; 作用未知
+
+另一个git目录提交同样内容，2个obj相同；
+
+提交2个文件后有6个obj
+
+--------
+
+通过 hash-object -w 存入的文件，只有一个 object, 没有任何索引指向它，删除也不会有问题。
