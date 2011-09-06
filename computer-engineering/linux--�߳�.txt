@@ -1,0 +1,14 @@
+LinuxTheads 是标准Linux线程库的命名。 
+它从glibc2.0开始已经集成在glibc库中，并且高度兼容Posix标准，不过在性能和信号的支持度上稍逊一筹。
+
+NGPT: Next Generation Posix Threads for Linux下一代LinuxPosix线程
+NGPT是一个由IBM发起的项目，其目的是提供更好的Posix兼容的Linux线程支持。
+
+NPTL: Native Posix Thread Library for Linux(Linux本地Posix线程库)
+NPTL是由 Ulrich Drepper ( glibc的主要维护人员)和 Ingo Molnar发起的项目，目的是提供world-class的Posix Linux线程支持。
+
+实现线程库的时候有一个选择就是你可以把所有的线程支持都放到内核中（也就是所谓的1：1的模型），
+也可以 把一些线程移到用户空间上去（也就是所谓的M：N模型）。
+从某个角度来说, M:N被认为拥有更好的性能，但是由于很难被正确的编写， 所以大部分人都远离了该方法。
+
+
