@@ -1,5 +1,16 @@
 Pypy 与 CPython 的区别：
 
+PyPy 包含了两个东西：
+一套用来为解释语言 (interpreted languages) 实现解释器 (interpreters) 的工具。
+使用该工具生成的一个 Python 实现。
+
+
+PyPy is a Python interpreter and JIT compiler. 
+
+Python动态编译器,多种后端，
+// 2010, PyPy has abandoned its JavaScript backend
+// 支持后端：C, CLI, JVM, Python(非常慢，但可用于调试）
+
 垃圾回收问题，
 不能确定的在out scope时调用 __del__
 例如 file 不能自动关闭。
@@ -14,4 +25,23 @@ Jython nor IronPython 同样不保证回收时机
 Pypy 也有 GIL，垃圾回收不是  re-entrant 的
 
 对于纯 python 算法代码，快3倍。
+
+RPython (Restricted Python)
+RPython is statically typed, to allow efficient compilation
+
+--------------------------
+set path=c:\python26\;%path%
+python 1.py
+稳定的时间消耗
+
+set path=D:\huchifeng.tmp\pypy-1.6;%path%
+pypy-c 1.py
+第一次慢，后面的非常快
+
+
+
+
+
+
+
 
