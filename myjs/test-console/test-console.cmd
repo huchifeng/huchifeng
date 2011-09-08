@@ -4,7 +4,7 @@ pause
 exit /B
 
 
-// fine for two process access same db file, database level lock
+
 
 */
 
