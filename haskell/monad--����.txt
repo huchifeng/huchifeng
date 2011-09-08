@@ -1,0 +1,84 @@
+wiki page is helpful
+
+A defined monad allows the programmer to chain actions together to build a pipeline to process data in various steps,
+ in which each action is decorated with additional processing rules provided by the monad.
+
+Although a function cannot directly cause a side effect, 
+it can construct a value describing a desired side effect that the caller should apply at a convenient time.
+
+FP 中 monad 对应  strong monad in category theory
+
+I/O monad
+Maybe Monad
+Identity monad
+some collection types, including lists, sets, and multisets, are monads
+State monad
+Environment monad (also called the reader monad and the function monad)
+Writer monad
+Continuation monad; // control is passed explicitly in the form of a continuation
+已经表达为monad的还有：
+Exception handling
+Graphical user interfaces
+Interprocess communication
+Parsers
+Interpreters
+Strict evaluation
+Interfaces to code written in other languages
+
+
+<<Haskell与范畴论>>
+
+http://www.yi-programmer.com/blog/2010-04-06_haskell_and_category_translate.html
+
+范畴就是一个组合，它包括三部分：
+一组 对象
+一组 态射 。每一个态射捆绑两个对象（一个源对象，一个目标对象）。
+态射组合; 例如 h 是态射 f 和 g 的组合; 
+  组合需要满足结合律；
+  态射在组合操作下是闭合的
+  单位态射 id[[A]]: A->A 
+
+所有集合就能构成一个范畴 Set ，函数（集合论中的函数）就是它的态射，态射的组合就是函数的组合。
+
+所有群也构成范畴 Grp ，保持群结构的函数就是它的态射（群同态）
+
+任何偏序结构 (P, <=) 都构成范畴，该范畴中的对象就是 P 中的元素，
+任意两个元素 a 和 b 只要满足 a<=b ，那么 a->b 就是一个态射。
+
+在相同的源对象和目的对象之间可以存在多个态射。
+以 Set 范畴为例，sin  和 cos 都是从 R 到 [-1, 1] 的函数，但是他们不是相同的态射。
+
+Haskell 范畴由 Haskell中所有类型组成；函数就是它的态射；(.) 操作符便是态射组合
+id.f = f.id = f
+
+函子 ，能把两个范畴关联在一起。函子本质上说其实就是范畴之间的转换
+
+函子：Grp->Set，它能将群转换成它底层的集合，并将群的态射转换成集合上的相同行为的函数。
+
+幂集函子：Set->Set，它能将集合转换成他们的幂集，
+
+单位函子，它将对象和态射直接转换成它们自己
+
+函子的公理
+  F[id[[A]] ] =id[[ F[A] ]]   函子F将A上的单位态射转换为F(A)上的单位态射
+
+函子 list 能将任意类型 T 转换为 [T]
+
+Maybe 是一个函子; // Maybe T : 除了可能是T也可能是Nothing
+class Functor (f :: * -> *) where
+    fmap :: (a -> b) -> (f a -> f b)
+instance Functor Maybe where
+    fmap f (Just x) = Just (f x)
+    fmap _ Nothing  = Nothing
+
+monad都是从一个范畴映射到其自身的函子
+
+无参(points-free)风格
+  可以翻译为：do语句块
+return x >>= f = f x
+  do { v <- return x; f v } = do { f x }
+m >>= return = m
+  do { v <- m; return v } = do { m }
+(m >>= f) >>= g = m >>= (x -> f x >>= g)
+  
+
