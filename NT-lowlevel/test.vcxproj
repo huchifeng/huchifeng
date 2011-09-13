@@ -15,7 +15,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="test-CloseDisplay.cpp" />
+    <ClCompile Include="test-CPU-id.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectName>tester</ProjectName>
