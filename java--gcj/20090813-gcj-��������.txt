@@ -1,0 +1,7 @@
+native code, 
+只是 exe 比较大
+
+Gnu Compiler for Java
+http://gcc.gnu.org/java/
+
+
