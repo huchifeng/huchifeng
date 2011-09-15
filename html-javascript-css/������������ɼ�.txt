@@ -1,0 +1,6 @@
+        if(cur.offsetTop < document.body.scrollTop){
+            cur.scrollIntoView(true); // ¶¥¶ÔÆë
+        }
+        if(cur.offsetTop + cur.offsetHeight > document.body.scrollTop + document.documentElement.clientHeight){
+            cur.scrollIntoView(false); // µ×¶ÔÆë
+        }

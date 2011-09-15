@@ -1,0 +1,26 @@
+不依赖嵌入浏览器提供的app对象，而是可以在普通浏览器中调试。
+
+<script>
+if(typeof(window.app)=="undefined"){
+    app = {
+        alert:function(s){ window.alert("app:"+s);},
+    };
+    document.write("simulating:");
+}
+else if(app.compile_debug()){
+    document.write("running in debug mode:");
+    window.app = {real_app: window.app };
+    app.f = function(){  // 调试模式加一些日志
+        app.real_app.f();
+        app.real_app.log("....");
+    };
+}
+else{
+    document.write("running:");
+}
+app.alert(9*9);
+下面的代码要完全通用。将调试代码集中在一块，作为一个aspect切面。
+</script>
+
+
+

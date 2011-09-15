@@ -21,6 +21,7 @@
     <a href="#" onclick="(set_book(this.innerHTML))">mylang</a>
     <a href="#" onclick="(set_show_all())">SHOW-ALL</a>
     <input type="button" value="notepad" onclick="the_edit()" />
+    <input type="button" value="ultraedit" onclick="the_edit1()" />
     <input type="button" value="vs" onclick="the_edit2()" />
     <br />
     <textarea id="form_ed" rows=5 cols=120/></textarea>
@@ -57,6 +58,7 @@ var current_id;
 var the_search = "";
 var the_book = "computer";
 var show_all = true;//false;
+var old_filter = "";
 load_cont();
 make_cont();
 set_current_id(-1); // for modify
@@ -73,6 +75,7 @@ function set_book(b){
     make_cont();
 }
 function edit_rec(i){
+    old_filter = form_ed.value;
     form_ed.value = cont[i].txt; //cont[i].replace(/^\d\S+\s+/, ""); // ^\d{8}-\d{6}
     form_ed.focus();        
     set_current_id(i);
@@ -126,7 +129,7 @@ function the_submit(){
 function after_change(){
     make_cont();
     save_cont();
-    form_ed.value = "";
+    form_ed.value = old_filter;
     form_ed.focus();        
 }
 function load_cont(){
@@ -236,6 +239,15 @@ function the_edit()
 {
     var WshShell = new ActiveXObject("WScript.Shell");
     WshShell.Run("\"notepad\" " + window.location.pathname);
+}
+function the_edit1()
+{
+    var WshShell = new ActiveXObject("WScript.Shell");
+    var p = (WshShell.ExpandEnvironmentStrings("%ProgramFiles%"));
+    var p86 = (WshShell.ExpandEnvironmentStrings("%ProgramFiles(x86)%"));
+    if(p86 != "%ProgramFiles(x86)%")
+        p = p86;
+    WshShell.Run("\""+p+"\\IDM Computer Solutions\\UltraEdit-32\\uedit32.exe\" " + window.location.pathname);
 }
 function the_edit2()
 {
