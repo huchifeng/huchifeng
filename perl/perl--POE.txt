@@ -1,0 +1,9 @@
+POE is a Perl framework for reactive systems, cooperative multitasking, and network applications
+
+POE: Perl Object Environment
+Perl, Objects & Events
+
+supports [10 different event loops], 
+
+POE是用单线程实现的基于事件驱动的，可协作完成多任务的Perl模块
+
