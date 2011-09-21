@@ -6,6 +6,6 @@ Creation-Date: 2011-09-20T15:58:53+08:00
 Created Tuesday 20 September 2011
 
 安装 [[zim-wiki]]
-阅读 [[[[链接器和加载器]]]].pdf
+阅读 [[[[:book-链接器和加载器]]]].pdf
 [[directshow]]
 
