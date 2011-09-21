@@ -1,0 +1,85 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+<html dir='ltr' xmlns='http://www.w3.org/1999/xhtml' 
+  xmlns:b='http://www.google.com/2005/gml/b'   xmlns:data='http://www.google.com/2005/gml/data'
+  xmlns:expr='http://www.google.com/2005/gml/expr'> 
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<script src="creole-1.0.js"></script>
+<style>
+
+table { border:1px solid gray; border-collapse:collapse;  }
+td { border:1px solid gray;  padding:0; }
+
+</style>
+</head> 
+<body> 
+
+
+<pre id=pre>
+
+
+
+
+= A
+
+== AA
+
+== AB
+
+== AC
+=== ACA
+==== ACAA
+
+= B
+
+== B1
+
+== B2
+== B3
+
+</pre>
+<div id="wiki"></div> 
+
+<script>
+
+// if js is disabled, show pure text
+
+function $(id) {
+    return document.getElementById(id);
+}
+ 
+function decodeEntities(str) {
+    return str.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"');
+}
+ 
+window.onload = function() {
+    var creole = new Parse.Simple.Creole( {
+        forIE: document.all,
+        interwiki: {
+            WikiCreole: 'http://www.wikicreole.org/wiki/',
+            Wikipedia: 'http://en.wikipedia.org/wiki/'
+        },
+        linkFormat: ''
+    } );
+    $('wiki').innerHTML = '';
+    $('pre').style.display = 'none';
+    var all = $('pre').innerHTML.match(/[^\r\n]*/g);
+    var id = [0,0,0,0,0,0];
+    for(var i=0; i<all.length; i++){
+       if(all[i].match(/^([=]+)/)){
+         var level = RegExp.$1.length;
+         id[level-1] ++;
+         all[i] = RegExp.$1 + " " + id.slice(0, level).join(".") + "."+ all[i].substr(level);
+         for(var j=level; j<id.length; j++)
+           id[j] = 0;
+       }
+    }
+    //alert($('pre').innerHTML);
+    //$('pre').innerHTML = all.join("\r\n");
+    //alert(all.join("\r\n"));
+    creole.parse($('wiki'), all.join("\r\n"));
+}
+
+</script>
+</body>
+</html>
