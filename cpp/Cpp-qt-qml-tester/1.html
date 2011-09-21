@@ -20,6 +20,9 @@ webview.f = function(){ app.alert(8); }
 var s = app.utf8("test-测试"); // 需要正确的 head meta
 //s.deleteLater(); // also OK
 app.alert(s.fromUtf8());
+
+webview.v = {"aaa-bb": 1, "cc" : [1,2,3]};
+webview.print_v();
 </script>
 </body>
 </html>

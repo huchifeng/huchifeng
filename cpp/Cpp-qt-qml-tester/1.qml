@@ -12,6 +12,13 @@ Rectangle {
 		id:web1;
 		x:10; y:100; width:root.width-x*2; height:root.height-y-10;
 		property variant v : [1,2,3];
+		function print_v(){
+			app.alert("print-v");
+			for(var i in v){
+				app.alert(i+":"+v[i]);
+			}
+		}
+		
 		property variant f;
 		function alert(s){
 			app.alert("from webview in qml:" + s);

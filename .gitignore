@@ -31,3 +31,5 @@ Res/
 /image-process/tmp.png
 /masm32/my-lib-dialog.lib
 /commonLisp/tmp.txt
+/zimWiki/.zim/index.db
+/zimWiki/.zim/state.conf
