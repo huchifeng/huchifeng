@@ -1,0 +1,9 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2011-09-21T17:39:27+08:00
+
+====== ReactOS ======
+Created Wednesday 21 September 2011
+
+开源二进制兼容windows
+下载试用 vmware 无法进入。 ReactOS-0.3.13-REL-live.zip

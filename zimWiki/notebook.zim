@@ -1,5 +1,9 @@
 [Notebook]
 name=Notes
-version=0.4
+version=0.40000000000000002
 endofline=dos
+home=Home
+icon=None
+document_root=None
+shared=False
 
