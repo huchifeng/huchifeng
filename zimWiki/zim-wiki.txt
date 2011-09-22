@@ -14,4 +14,13 @@ page重命名很好。
 
 export 整个notebook给其他人
 
+在其目录下增加1000个文件，zim会响应很慢，可能是做索引。
+
+中文必须是 utf8 文件，放到目录下自动发现并导入
+
+=== other personal wiki, desktop wiki ===
+* nodewiki 基于 redis 数据库。
+* 考虑设计一个单文件，nodejs支持的wiki，文件修改自身，这样文件可以保存在 svn，git 里面，版本管理。
+文件完全显示，但分节，点击后原地变为 textarea, 进入编辑-提交；
+有zim后比不要了，zim分散小文件，更适合 svn。
 

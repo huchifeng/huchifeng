@@ -23,6 +23,7 @@
     <input type="button" value="notepad" onclick="the_edit()" />
     <input type="button" value="ultraedit" onclick="the_edit1()" />
     <input type="button" value="vs" onclick="the_edit2()" />
+    <input type="button" value="to-zim-wiki" onclick="to_zim_wiki()" />
     <br />
     <textarea id="form_ed" rows=5 cols=120/></textarea>
     <br />
@@ -183,6 +184,20 @@ function make_cont(){
     counter_span.innerHTML = counter;
     book_span.innerHTML = (show_all ? "ALL/" :"")+the_book;
 }
+function to_zim_wiki_1(){
+		for(var i=cont.length-1; i>=0; i--){
+				write_file(cont[i].book+"-"+cont[i].date+".txt", cont[i].txt, true);
+    }
+    // too many files for zim to handle
+}
+function to_zim_wiki(){
+		var s = "";
+		for(var i=cont.length-1; i>=0; i--){
+				s += "== " + cont[i].book+"-"+cont[i].date+" ==\n" + cont[i].txt + "\n\n";
+    }
+    write_file("_export.txt", s, true);
+}
+
 function save_cont(){
     var s = JSON.stringify(cont, null, 2);
     write_file(the_filename, s, true);
