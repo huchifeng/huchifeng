@@ -13,3 +13,5 @@ page名字最好简单，用关键词名词连线而不用句子；例如"dshow-
 page重命名很好。
 
 export 整个notebook给其他人
+
+[[test2]]
