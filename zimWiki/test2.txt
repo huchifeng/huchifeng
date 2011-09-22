@@ -1,8 +1,0 @@
-Content-Type: text/x-zim-wiki
-Wiki-Format: zim 0.4
-Creation-Date: 2011-09-22T08:33:32+08:00
-
-====== test2 ======
-Created Thursday 22 September 2011
-
-test2 only
