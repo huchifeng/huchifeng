@@ -1,0 +1,9 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2011-09-23T11:01:27+08:00
+
+====== js-richtext-editor ======
+Created Friday 23 September 2011
+
+MarkitUp 基于 jQuery, 不是所见即所得
+使用 jwysiwyg 基于 jQuery 不错

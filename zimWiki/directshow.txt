@@ -6,3 +6,6 @@ Creation-Date: 2011-09-21T15:47:28+08:00
 Created Wednesday 21 September 2011
 
 [[:amcap]] 源码阅读
+
+[[book-directshow实务精选]] pdf
+[[book-directshow开发指南]] pdf

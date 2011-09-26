@@ -1,0 +1,12 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2011-09-23T14:46:24+08:00
+
+====== portableapps ======
+Created Friday 23 September 2011
+
+用于安装
+firefox opera 
+等
+
+aMSN 不能使用, gb18030 出错

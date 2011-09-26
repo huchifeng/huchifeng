@@ -12,12 +12,21 @@ Created Tuesday 20 September 2011
 安装 [[zim-wiki]]
 阅读 [[[[:book-链接器和加载器]]]].pdf
 [[directshow]]
+* wikipad 也是 wiki notebook, 但是基于数据库的,试用后删除.
+* moinmoin 提供tar包, 安装 python 即可用; 启动 server 后浏览器访问. 文件存储在 wiki\data\pages\FindPage\revisions
+  以 00000001 之类命名,不用版本单独有文件. 这样不适合与 svn 协同
 
 OS:
 [[ReactOS]]
 
+虚拟机:
+[[portableapps]] 可能截获注册表调用之类的,或者是发布的程序已经经过修改验证,然后打包.
+
 editor:
 [[ultraedit]]
+[[js-richtext-editor]]
 
 iso-光盘
 [[ultraiso]]
+
+python 的 chm2pdf, 效果不佳； 中文问题，各种错误，基于脚本的软件还是不行

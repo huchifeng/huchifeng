@@ -34,5 +34,15 @@ vc2008 编译 fail
 
 安装 vc6; 无错通过；
 
+====== src ======
+"Video Capture Filter..."   iVCapDialogPos
+"Video Capture Pin..."  iVCapCapturePinDialogPos
+
+IGraphBuilder
+ICaptureGraphBuilder2 需要 SetFiltergraph(IGraphBuilder)
+IBaseFilter 用于 camera
+
+
+
 
 
