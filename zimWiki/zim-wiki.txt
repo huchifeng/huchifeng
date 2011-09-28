@@ -11,6 +11,7 @@ Created Wednesday 21 September 2011
 适合与svn-git配合，管理项目文档。
 page名字最好简单，用关键词名词连线而不用句子；例如"dshow-example-amcap"代替“amcap源码阅读”
 page重命名很好。
+可以添加 +link 创建子目录下的 wiki， :link 则是 root, 无前缀则是兄弟页面；可以多级名字空间 a:b:c
 
 export 整个notebook给其他人
 

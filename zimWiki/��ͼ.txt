@@ -1,0 +1,9 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2011-09-26T14:20:46+08:00
+
+====== 绘图 ======
+Created Monday 26 September 2011
+
+GIMP 擦掉按钮图标上的文字， 有垂直的渐变，因此用复制法，逐块覆盖。 C-C C-V Right键移动
+
