@@ -1,9 +1,0 @@
-Content-Type: text/x-zim-wiki
-Wiki-Format: zim 0.4
-Creation-Date: 2011-09-22T16:26:22+08:00
-
-====== ultraedit ======
-Created Thursday 22 September 2011
-
-必须关闭 语法高亮--自动更正关键字， 否则自动大写开头，导致程序bug
-关闭文件处理-备份；不创建 .bak 文件
