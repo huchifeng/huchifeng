@@ -18,6 +18,7 @@ Created Tuesday 20 September 2011
 
 OS:
 [[ReactOS]]
+NUAC Norton UAC 只适用于 vista? win7x64 无法安装。
 
 虚拟机:
 [[portableapps]] 可能截获注册表调用之类的,或者是发布的程序已经经过修改验证,然后打包.
@@ -29,10 +30,14 @@ editor:
 iso-光盘
 [[ultraiso]]
 
-python 的 chm2pdf, 效果不佳； 中文问题，各种错误，基于脚本的软件还是不行
+[[chm-pdf-doc-etc]]
+
 
 [[绘图]] GIMP
 
+[[nodejs-开发]]
+
+[[qt-qml-html]]
 
 
 

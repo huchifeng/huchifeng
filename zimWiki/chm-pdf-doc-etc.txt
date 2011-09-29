@@ -1,0 +1,8 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2011-09-28T11:13:26+08:00
+
+====== chm-pdf-doc-etc ======
+Created Wednesday 28 September 2011
+
+python 的 chm2pdf, 效果不佳； 中文问题，各种错误，基于脚本的软件还是不行
