@@ -1,9 +1,0 @@
-E:\Program Files\Reference Assemblies\Microsoft\Framework\v3.0\System.Runtime.Serialization.dll
-没有 IgnoreDataMemberAttribute
-
-C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\v3.0\System.Runtime.Serialization.dll
-就有
-
-http://msdn.microsoft.com/en-us/library/system.runtime.serialization.ignoredatamemberattribute.aspx
-.NET Framework
-Supported in: 4, 3.5 SP1, 3.0 SP2

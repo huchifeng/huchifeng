@@ -1,1 +1,0 @@
-about c++, except C++/CLR

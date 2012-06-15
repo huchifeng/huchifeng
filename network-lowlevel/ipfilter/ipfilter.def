@@ -1,3 +1,0 @@
-LIBRARY      "ipfilter"
-EXPORTS
-	WSPStartup

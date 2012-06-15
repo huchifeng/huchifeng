@@ -1,6 +1,0 @@
-emacs:
-vi:
-pico: unix 常见; 免费而不开源。操作类似emacs但每一步都有快捷键提示, 易用。
-  可用克隆的 nano 代替。windows 版类似 DOS 界面。
-
-ultraedit

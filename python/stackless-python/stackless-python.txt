@@ -1,8 +1,0 @@
-An experimental implementation that supports continuations, generators, microthreads, and coroutines.
-
-enhanced version of the Python 
-
-避免传统 thread模型 带来的问题（复杂性，效率）
-
-
-
